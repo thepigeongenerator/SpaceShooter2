@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ShapeDrawer;
 using SpaceShooter2.Src.Data;
 using System;
 namespace SpaceShooter2.Src;
@@ -66,5 +67,9 @@ internal static class Astroids {
             astroid.transform.scale,
             SpriteEffects.None,
             0);
+
+#if VISUALIZE_DEBUG
+        DrawShape.Cicle(spriteBatch, astroid.transform.position, (int)(textures.astroid.Width * astroid.transform.scale.X), new Color(0xFF00FF00));
+#endif
     }
 }
