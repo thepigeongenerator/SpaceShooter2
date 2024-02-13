@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src.Data;
-using System.CodeDom;
-using System.Collections.Generic;
 
 namespace SpaceShooter2.Src;
 internal static class PlayerManager {
