@@ -1,5 +1,6 @@
 ![showcase](docs/showcase.gif)
 
+## project info
 I was unsatisfied with the [original version](https://github.com/thepigeongenerator/SpaceShooter) which I go more into detail in that repo. But, this project is a redesign of that one, where I attempt to use a more functional design in the code.
 
 ### features
