@@ -58,10 +58,5 @@ internal static class Bullets {
             bullet.transform.scale,
             SpriteEffects.None,
             0f);
-
-#if VISUALIZE_DEBUG
-        DrawShape.Line(spriteBatch, bullet.transform.position - (new Vector2(0,1) * 15), bullet.transform.position + (new Vector2(0,1) * 15), new Color(0xFF0000FF));
-        DrawShape.Line(spriteBatch, bullet.transform.position - (new Vector2(1,0) * 15), bullet.transform.position + (new Vector2(1,0) * 15), new Color(0xFF0000FF));
-#endif
     }
 }
