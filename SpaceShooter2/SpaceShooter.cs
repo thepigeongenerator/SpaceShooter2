@@ -8,42 +8,46 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace SpaceShooter2;
-public class SpaceShooter : Game {
+public class SpaceShooter : Game
+{
     //constants
-    private const int BULLET_SPAWN_DELAY_MS = 500;  //the delay in miliseconds between bullet spawns
-    private const int ASTROID_SPAWN_DELAY_MS = 500; //the delay in miliseconds between astroid spawns
+    private const int BULLET_SPAWN_DELAY_MS = 500;  //the delay in milliseconds between bullet spawns
+    private const int ASTROID_SPAWN_DELAY_MS = 500; //the delay in milliseconds between astroid spawns
     private const int SCREEN_WIDTH = 980;   //the width of the window
     private const int SCREEN_HEIGHT = 640;  //the height of the window
 
     //monogame variables
-    private readonly GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
+    private readonly GraphicsDeviceManager graphics;
+    private SpriteBatch spriteBatch;
 
     //game variables
-    private GlobalState _globalState;
+    private GlobalState globalState;
 
     #region constructor
-    public SpaceShooter() {
-        _graphics = new GraphicsDeviceManager(this);
+    public SpaceShooter()
+    {
+        graphics = new GraphicsDeviceManager(this);
 #if DEBUG
         int seed = 0;
 #else
         int seed = (int)DateTime.Now.TimeOfDay.TotalSeconds; //use a seed using time
 #endif
 
-        _globalState = new GlobalState() {
+        globalState = new GlobalState()
+        {
             random = new Random(seed), //init random with a seed (also; WHY IS THIS A SIGNED INTEGER!?)
-            astroids = new List<Astroid>(),
+            asteroids = new List<Astroid>(),
             bullets = new List<Bullet>(),
             textures = new(),
             timings = new(),
         };
 
+        // game settings
         Content.RootDirectory = "Content";
         IsMouseVisible = false;
-        _graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
-        _graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
-        _graphics.IsFullScreen = false;
+        graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
+        graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
+        graphics.IsFullScreen = false;
 
         Console.WriteLine("using seed: {0}", seed);
     }
@@ -51,61 +55,66 @@ public class SpaceShooter : Game {
 
     #region game phases
     #region initialize
-    protected override void Initialize() {
+    protected override void Initialize()
+    {
         base.Initialize();
     }
     #endregion //initialize
 
     #region loadcontent
-    protected override void LoadContent() {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
+    protected override void LoadContent()
+    {
+        spriteBatch = new SpriteBatch(GraphicsDevice);
 
         //load all the textures
-        _globalState.textures.astroid = Content.Load<Texture2D>("astroid");
-        _globalState.textures.bullet = Content.Load<Texture2D>("bullet");
-        _globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_0"));
-        _globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_1"));
-        _globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_2"));
+        globalState.textures.astroid = Content.Load<Texture2D>("astroid");
+        globalState.textures.bullet = Content.Load<Texture2D>("bullet");
+        globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_0"));
+        globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_1"));
+        globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_2"));
 
         //create a player
-        _globalState.player = PlayerManager.CreatePlayer(_globalState.textures, SCREEN_WIDTH, SCREEN_HEIGHT);
+        globalState.player = new Player(globalState.textures, SCREEN_WIDTH, SCREEN_HEIGHT);
     }
     #endregion //loadcontent
 
     #region update
-    protected override void Update(GameTime gameTime) {
-        if (Keyboard.GetState().IsKeyDown(Keys.Escape) || _globalState.player.health <= 0F) {
+    protected override void Update(GameTime gameTime)
+    {
+        if (Keyboard.GetState().IsKeyDown(Keys.Escape) || globalState.player.health <= 0F)
+        {
             Exit();
         }
 
-        _globalState.player = PlayerManager.UpdatePlayer(_globalState.player, SCREEN_WIDTH);
-        UpdateObjects(_globalState.astroids, (astroid) => Astroids.UpdateAstroid(astroid, _globalState.player, _globalState.textures, SCREEN_HEIGHT));
-        UpdateObjects(_globalState.bullets, (bullet) => Bullets.UpdateBullet(bullet, _globalState.textures, _globalState.astroids));
+        globalState.player.Update(SCREEN_WIDTH);
+        UpdateObjects(globalState.asteroids, (astroid) => astroid.Update(globalState.player, globalState.textures, SCREEN_HEIGHT));
+        UpdateObjects(globalState.bullets, (bullet) => bullet.Update(globalState.textures, globalState.asteroids));
 
         //create new bullet
-        RunWhenTimer(gameTime, ref _globalState.timings.bulletSpawnTime, BULLET_SPAWN_DELAY_MS, () =>
-            _globalState.bullets.Add(Bullets.CreateBullet(_globalState.player.transform.position)));
+        RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, BULLET_SPAWN_DELAY_MS, () =>
+            globalState.bullets.Add(new Bullet(globalState.player.transform.position)));
 
         //create new astroid
-        RunWhenTimer(gameTime, ref _globalState.timings.astroidSpawnTime, ASTROID_SPAWN_DELAY_MS, () =>
-            _globalState.astroids.Add(Astroids.CreateAstroid(_globalState.random, _globalState.player, _globalState.textures, SCREEN_WIDTH)));
+        RunWhenTimer(gameTime, ref globalState.timings.astroidSpawnTime, ASTROID_SPAWN_DELAY_MS, () =>
+            globalState.asteroids.Add(new Astroid(globalState.random, globalState.player, globalState.textures, SCREEN_WIDTH)));
 
         base.Update(gameTime);
     }
     #endregion //update
 
     #region draw
-    protected override void Draw(GameTime gameTime) {
+    protected override void Draw(GameTime gameTime)
+    {
         GraphicsDevice.Clear(new Color(0xFF101010));
 
-        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
         //draw textures
-        PlayerManager.DrawPlayer(_globalState.player, _globalState.textures, _spriteBatch);
-        _globalState.astroids.ForEach((astroid) => Astroids.DrawAstroid(astroid, _globalState.textures, _spriteBatch));
-        _globalState.bullets.ForEach((bullet) => Bullets.DrawBullet(bullet, _globalState.textures, _spriteBatch));
+        globalState.player.Draw(globalState.textures, spriteBatch);
+        globalState.asteroids.ForEach((astroid) => astroid.Draw(globalState.textures, spriteBatch));
+        globalState.bullets.ForEach((bullet) => bullet.Draw(globalState.textures, spriteBatch));
 
-        _spriteBatch.End();
+        spriteBatch.End();
 
         base.Draw(gameTime);
     }
@@ -117,8 +126,10 @@ public class SpaceShooter : Game {
     /// executes an action based on a certain delay
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void RunWhenTimer(GameTime gameTime, ref TimeSpan timing, int msDelay, Action execute) {
-        if ((gameTime.TotalGameTime - timing).Milliseconds > msDelay) {
+    private static void RunWhenTimer(GameTime gameTime, ref TimeSpan timing, int msDelay, Action execute)
+    {
+        if ((gameTime.TotalGameTime - timing).Milliseconds > msDelay)
+        {
             execute.Invoke();
             timing = gameTime.TotalGameTime;
         }
@@ -128,17 +139,15 @@ public class SpaceShooter : Game {
     /// updates the objects through executing a function on them
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void UpdateObjects<T>(List<T> objects, Func<T, T?> func) where T : struct {
+    private static void UpdateObjects<T>(List<T> objects, Func<T, bool> func)
+    {
         List<int> tRemoveIndices = new();
-        for (int i = 0; i < objects.Count; i++) {
-            T? t = func.Invoke(objects[i]);
-
-            if (t == null) {
+        for (int i = 0; i < objects.Count; i++)
+        {
+            // add the index if the function returns FALSE
+            if (func.Invoke(objects[i]) == false)
+            {
                 tRemoveIndices.Add(i);
-            }
-            else {
-                //update T in the list
-                objects[i] = (T)t;
             }
         }
 
@@ -146,16 +155,18 @@ public class SpaceShooter : Game {
         //indices are in accending order, removing elements will cause the others to change.
         //Reversing the list solves this problem
         tRemoveIndices.Reverse();
-        foreach (int i in tRemoveIndices) {
-            objects.RemoveAt(i);
+        for (int i = tRemoveIndices.Count - 1; i >= 0; i--)
+        {
+            objects.RemoveAt(tRemoveIndices[i]);
         }
     }
     #endregion //utillity
 
     /// <summary>handles the application's global state</summary>
-    private struct GlobalState {
+    private struct GlobalState
+    {
         public Random random;
-        public List<Astroid> astroids;
+        public List<Astroid> asteroids;
         public List<Bullet> bullets;
         public Player player;
         public Timings timings;
