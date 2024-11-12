@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ShapeDrawer;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
 using System.Collections.Generic;
