@@ -1,3 +1,4 @@
+using Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -5,27 +6,23 @@ using SpaceShooter2.Src.Data;
 
 namespace SpaceShooter2.Src;
 
-internal class Player
+internal class Player : GameObject
 {
-    readonly public Transform transform = new();
     public byte health = 0;
 
     // creates a new player at the centre of the screen
     public Player(Textures textures, int screenWidth, int screenHeight)
     {
         health = 10;
-            transform = new Transform()
-            {
-                position = new Vector2(screenWidth / 2),
-                scale = Vector2.One * 4.5F,
-            };
+        transform.position = new Vector2(screenWidth / 2);
+        transform.scale = Vector2.One * 4.5F;
 
         //set the correct Y position for the player
         transform.position.Y = screenHeight - textures.player.textures[textures.player.currentTexture].Height * transform.scale.Y / 2;
     }
 
     // allows the user to use input to update the player's position
-    public bool Update(int screenWidth)
+    public void Update(int screenWidth)
     {
         //update player's position based on input
         if (Keyboard.GetState().IsKeyDown(Keys.A))
@@ -38,8 +35,6 @@ internal class Player
             transform.position.X %= screenWidth;
         else if (transform.position.X < 0)
             transform.position.X += screenWidth;
-
-        return true;
     }
 
     // draws the player to the screen

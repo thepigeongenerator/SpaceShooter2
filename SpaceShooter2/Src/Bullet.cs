@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceShooter2.Src.Data;
@@ -6,30 +7,31 @@ using SpaceShooter2.Src.Util;
 
 namespace SpaceShooter2.Src;
 
-internal class Bullet
+internal class Bullet : GameObject
 {
-    const int SPEED = 10;
-
-    readonly public Transform transform;
-
+    private const int SPEED = 10;
+    private readonly List<Bullet> bullets = null;
 
     // creates a new bullet at the player's position
-    public Bullet(Vector2 playerPosition)
+    public Bullet(GlobalState glob)
     {
-        transform = new Transform
-        {
-            position = new Vector2(playerPosition.X, playerPosition.Y - 50),
-            scale = Vector2.One * 2F,
-        };
+        Vector2 playerPosition = glob.player.transform.position;
+
+        transform.position = new Vector2(playerPosition.X, playerPosition.Y - 50);
+        transform.scale = Vector2.One * 2F;
+        bullets = glob.bullets;
     }
 
     // makes the bullet move upwards and destroy any astroids in it's way (destroys once no longer visible)
-    public bool Update(Textures textures, List<Astroid> asteroids)
+    public void Update(Textures textures, List<Astroid> asteroids)
     {
         transform.position.Y -= SPEED;
 
         if (transform.position.Y + (textures.bullet.Height * transform.scale.Y / 2F) < 0)
-            return false;
+        {
+            Dispose();
+            return;
+        }
 
         for (int i = 0; i < asteroids.Count; i++)
         {
@@ -38,14 +40,13 @@ internal class Bullet
             {
                 //destroy the astroid if it isn't unbreakable
                 if (asteroids[i].unbreakable == false)
-                    asteroids.RemoveAt(i);
+                    asteroids[i].Dispose(); // destroy the astroid
 
                 //destroy the bullet
-                return false;
+                Dispose();
+                return;
             }
         }
-
-        return true;
     }
 
     // draws the bullet to the screen
@@ -64,5 +65,11 @@ internal class Bullet
             transform.scale,
             SpriteEffects.None,
             0.0F);
+    }
+
+    // cleans up the bullet references
+    protected override void OnDispose()
+    {
+        bullets.Remove(this);
     }
 }
