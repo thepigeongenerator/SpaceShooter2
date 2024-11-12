@@ -5,7 +5,7 @@ using ThePigeonGenerator.MonoGame.Render;
 namespace SpaceShooter2.Src.Data;
 
 // handles the application's global state
-internal struct GlobalState
+internal record GlobalState // store the reference instead of copying everything all the time
 {
     public Random random;
     public List<Astroid> asteroids;
