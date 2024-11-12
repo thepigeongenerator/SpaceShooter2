@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src.Data;
+using SpaceShooter2.Src.Util;
 
 namespace SpaceShooter2.Src;
 
@@ -38,8 +39,10 @@ internal class Player : GameObject
     }
 
     // draws the player to the screen
-    public void Draw(Textures textures, SpriteBatch spriteBatch)
+    public void Draw(GlobalState glob, GameTime gameTime, SpriteBatch spriteBatch)
     {
+        Textures textures = glob.textures;
+
         //draw the texture
         spriteBatch.Draw(
             textures.player.textures[textures.player.currentTexture],
@@ -54,13 +57,13 @@ internal class Player : GameObject
             SpriteEffects.None,
             0.0F);
 
-        //BUG: textures are switching too fast, add a delay somehow
-        //finally, update the texture index
-        textures.player.currentTexture++; //increase the index of the active texture
-
-        if (textures.player.currentTexture >= textures.player.textures.Count)
-        {
-            textures.player.currentTexture = 0;
-        }
+        //update the texture index
+        TimeUtils.RunWhenTimer(gameTime, ref glob.timings.playerSwitchTextureTime, 100, () => {
+            textures.player.currentTexture++; //increase the index of the active texture
+            if (textures.player.currentTexture >= textures.player.textures.Count)
+            {
+                textures.player.currentTexture = 0;
+            }
+        });
     }
 }

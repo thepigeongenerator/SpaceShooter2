@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src;
 using SpaceShooter2.Src.Data;
+using SpaceShooter2.Src.Util;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace SpaceShooter2;
 public partial class SpaceShooter : Core.Game
@@ -84,11 +84,11 @@ public partial class SpaceShooter : Core.Game
         ForEachObject<Bullet>((bullet) => bullet.Update(globalState));
 
         //create new bullet
-        RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, Const.BULLET_SPAWN_DELAY_MS, () =>
+        TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, Const.BULLET_SPAWN_DELAY_MS, () =>
             globalState.bullets.Add(new Bullet(globalState)));
 
         //create new astroid
-        RunWhenTimer(gameTime, ref globalState.timings.astroidSpawnTime, Const.ASTROID_SPAWN_DELAY_MS, () =>
+        TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.astroidSpawnTime, Const.ASTROID_SPAWN_DELAY_MS, () =>
             globalState.asteroids.Add(new Astroid(globalState, Const.SCREEN_WIDTH)));
 
         base.Update(gameTime);
@@ -102,7 +102,7 @@ public partial class SpaceShooter : Core.Game
         spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
         //draw textures
-        globalState.player.Draw(globalState.textures, spriteBatch);
+        globalState.player.Draw(globalState, gameTime, spriteBatch);
         ForEachObject<Astroid>((astroid) => astroid.Draw(globalState.textures, spriteBatch));
         ForEachObject<Bullet>((bullet) => bullet.Draw(globalState.textures, spriteBatch));
 
@@ -113,16 +113,5 @@ public partial class SpaceShooter : Core.Game
         globalState.pcl.ClearBuffer(); // clear the internal buffer *after* drawing, otherwise it'll fail to draw
 
         base.Draw(gameTime);
-    }
-
-    // executes an action based on a certain delay
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void RunWhenTimer(GameTime gameTime, ref TimeSpan timing, int msDelay, Action execute)
-    {
-        if ((gameTime.TotalGameTime - timing).Milliseconds > msDelay)
-        {
-            execute.Invoke();
-            timing = gameTime.TotalGameTime;
-        }
     }
 }
