@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-
-#if DEBUG
 using ThePigeonGenerator.MonoGame.Render;
-#endif
 
 namespace SpaceShooter2.Src.Data;
+
 // handles the application's global state
 internal struct GlobalState
 {
@@ -16,9 +14,8 @@ internal struct GlobalState
     public Timings timings;
     public Textures textures;
 
-#if DEBUG
+    // debug
     public PixelControlLayer pcl;
     public bool hitboxes;
     public bool hitboxesLock;
-#endif
 }

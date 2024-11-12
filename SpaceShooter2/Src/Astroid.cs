@@ -11,8 +11,6 @@ namespace SpaceShooter2.Src;
 
 internal class Astroid : GameObject
 {
-    private const float MAX_SIZE = 2F;
-
     public readonly bool unbreakable;
     private readonly List<Astroid> asteroids;
 
@@ -23,7 +21,7 @@ internal class Astroid : GameObject
     public Astroid(GlobalState glob, int screenWidth)
     {
         transform.rotation = glob.random.NextSingle() * MathF.Tau; //random rotation from 0..TAU
-        transform.scale = Vector2.One * (glob.random.NextSingle() + 1F) * MAX_SIZE / 2F; //make the scaling random
+        transform.scale = Vector2.One * ((glob.random.NextSingle() + 1F) * Const.MAX_ASTROID_SIZE / 2F); //make the scaling random
         /* MAX_SIZE is divided by 2 because NextSingle produces a value between 0..1.
            We add 1 to make sure we don't get any zero issues. Making the range 1..2.
            Multiplying by MAX_SIZE then would equate to the Actual max size to be 2 * MAX_SIZE. */
@@ -53,26 +51,24 @@ internal class Astroid : GameObject
     }
 
     // makes the astroid move down and damages the player if it interacts
-    public void Update(GlobalState glob, int screenHeight)
+    public void Update(GlobalState glob)
     {
         // move the astroid down
-        transform.position.Y += -1 * transform.scale.X + MAX_SIZE;
+        transform.position.Y += -1 * transform.scale.X + Const.MAX_ASTROID_SIZE;
 
         // if the astroid fell off the screen; destroy the astroid
-        if (transform.position.Y - (glob.textures.astroid.Width * transform.scale.X) > screenHeight)
+        if (transform.position.Y - radius > Const.SCREEN_HEIGHT)
         {
             Dispose();
             return;
         }
 
         // rotate the astroid
-        transform.rotation += MathF.Tau / 360 * -1 * (transform.scale.X - MAX_SIZE);
+        transform.rotation += MathF.Tau / 360 * -1 * (transform.scale.X - Const.MAX_ASTROID_SIZE);
         transform.rotation %= MathF.Tau;
 
-#if DEBUG
         if (glob.hitboxes)
             glob.pcl.SetCircle((int)transform.position.X, (int)transform.position.Y, (int)radius, (Color)Colour.Green);
-#endif
     }
 
     // draws the astroid with the spriteBatch

@@ -11,18 +11,18 @@ internal class Player : GameObject
     public byte health = 0;
 
     // creates a new player at the centre of the screen
-    public Player(Textures textures, int screenWidth, int screenHeight)
+    public Player(Textures textures)
     {
         health = 10;
-        transform.position = new Vector2(screenWidth / 2);
+        transform.position = new Vector2(Const.SCREEN_WIDTH / 2);
         transform.scale = Vector2.One * 4.5F;
 
         //set the correct Y position for the player
-        transform.position.Y = screenHeight - textures.player.textures[textures.player.currentTexture].Height * transform.scale.Y / 2;
+        transform.position.Y = Const.SCREEN_HEIGHT - textures.player.textures[textures.player.currentTexture].Height * transform.scale.Y / 2;
     }
 
     // allows the user to use input to update the player's position
-    public void Update(int screenWidth)
+    public void Update()
     {
         //update player's position based on input
         if (Keyboard.GetState().IsKeyDown(Keys.A))
@@ -31,10 +31,10 @@ internal class Player : GameObject
             transform.position.X += 10;
 
         //flip the player's position to the other side of the screen if they go "out of boubds"
-        if (transform.position.X > screenWidth)
-            transform.position.X %= screenWidth;
+        if (transform.position.X > Const.SCREEN_WIDTH)
+            transform.position.X %= Const.SCREEN_WIDTH;
         else if (transform.position.X < 0)
-            transform.position.X += screenWidth;
+            transform.position.X += Const.SCREEN_WIDTH;
     }
 
     // draws the player to the screen

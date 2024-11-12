@@ -10,12 +10,6 @@ using System.Runtime.CompilerServices;
 namespace SpaceShooter2;
 public partial class SpaceShooter : Core.Game
 {
-    //constants
-    private const int BULLET_SPAWN_DELAY_MS = 500;  //the delay in milliseconds between bullet spawns
-    private const int ASTROID_SPAWN_DELAY_MS = 500; //the delay in milliseconds between astroid spawns
-    private const int SCREEN_WIDTH = 980;   //the width of the window
-    private const int SCREEN_HEIGHT = 640;  //the height of the window
-
     //monogame variables
     private readonly GraphicsDeviceManager graphics;
     private SpriteBatch spriteBatch;
@@ -44,8 +38,8 @@ public partial class SpaceShooter : Core.Game
         // game settings
         Content.RootDirectory = "Content";
         IsMouseVisible = false;
-        graphics.PreferredBackBufferWidth = SCREEN_WIDTH;
-        graphics.PreferredBackBufferHeight = SCREEN_HEIGHT;
+        graphics.PreferredBackBufferWidth = Const.SCREEN_WIDTH;
+        graphics.PreferredBackBufferHeight = Const.SCREEN_HEIGHT;
         graphics.IsFullScreen = false;
 
         Console.WriteLine("using seed: {0}", seed);
@@ -66,11 +60,8 @@ public partial class SpaceShooter : Core.Game
         globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_2"));
 
         //create a player
-        globalState.player = new Player(globalState.textures, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-#if DEBUG
-        globalState.pcl = new(GraphicsDevice, SCREEN_WIDTH, SCREEN_HEIGHT);
-#endif
+        globalState.player = new Player(globalState.textures);
+        globalState.pcl = new(GraphicsDevice);
     }
 
     protected override void Update(GameTime gameTime)
@@ -78,6 +69,7 @@ public partial class SpaceShooter : Core.Game
 #if DEBUG
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+#endif
 
         if (globalState.hitboxesLock == false && Keyboard.GetState().IsKeyDown(Keys.F3))
         {
@@ -86,19 +78,18 @@ public partial class SpaceShooter : Core.Game
         }
         else if (Keyboard.GetState().IsKeyUp(Keys.F3))
             globalState.hitboxesLock = false;
-#endif
 
-        globalState.player.Update(SCREEN_WIDTH);
-        ForEachObject<Astroid>((astroid) => astroid.Update(globalState, SCREEN_HEIGHT));
+        globalState.player.Update();
+        ForEachObject<Astroid>((astroid) => astroid.Update(globalState));
         ForEachObject<Bullet>((bullet) => bullet.Update(globalState));
 
         //create new bullet
-        RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, BULLET_SPAWN_DELAY_MS, () =>
+        RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, Const.BULLET_SPAWN_DELAY_MS, () =>
             globalState.bullets.Add(new Bullet(globalState)));
 
         //create new astroid
-        RunWhenTimer(gameTime, ref globalState.timings.astroidSpawnTime, ASTROID_SPAWN_DELAY_MS, () =>
-            globalState.asteroids.Add(new Astroid(globalState, SCREEN_WIDTH)));
+        RunWhenTimer(gameTime, ref globalState.timings.astroidSpawnTime, Const.ASTROID_SPAWN_DELAY_MS, () =>
+            globalState.asteroids.Add(new Astroid(globalState, Const.SCREEN_WIDTH)));
 
         base.Update(gameTime);
     }
@@ -115,15 +106,11 @@ public partial class SpaceShooter : Core.Game
         ForEachObject<Astroid>((astroid) => astroid.Draw(globalState.textures, spriteBatch));
         ForEachObject<Bullet>((bullet) => bullet.Draw(globalState.textures, spriteBatch));
 
-#if DEBUG
         globalState.pcl.Draw(spriteBatch);
-#endif
 
         spriteBatch.End();
 
-#if DEBUG
         globalState.pcl.ClearBuffer(); // clear the internal buffer *after* drawing, otherwise it'll fail to draw
-#endif
 
         base.Draw(gameTime);
     }

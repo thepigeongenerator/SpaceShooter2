@@ -10,7 +10,6 @@ namespace SpaceShooter2.Src;
 
 internal class Bullet : GameObject
 {
-    private const int SPEED = 10;
     private readonly List<Bullet> bullets = null;
 
     // creates a new bullet at the player's position
@@ -29,7 +28,7 @@ internal class Bullet : GameObject
         int w = glob.textures.bullet.Width;
         int h = glob.textures.bullet.Height;
         List<Astroid> asteroids = glob.asteroids;
-        transform.position.Y -= SPEED;
+        transform.position.Y -= Const.BULLET_SPEED;
 
         if (transform.position.Y + (h * transform.scale.Y / 2F) < 0)
         {
