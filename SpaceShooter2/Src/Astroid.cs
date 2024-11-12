@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using SpaceShooter2.Src.Data;
 using Core;
 using System.Collections.Generic;
+using ThePigeonGenerator.MonoGame.Render;
+using SpaceShooter2.Src.Util;
 
 namespace SpaceShooter2.Src;
 
@@ -12,14 +14,16 @@ internal class Astroid : GameObject
     private const float MAX_SIZE = 2F;
 
     public readonly bool unbreakable;
-    private readonly List<Astroid> astroids;
+    private readonly List<Astroid> asteroids;
+
+    public readonly float radius;
 
     // creates a new astroid with a random position at the top of the screen.
     // there is also a random chance this astroid will be unbreakable
     public Astroid(GlobalState glob, int screenWidth)
     {
         transform.rotation = glob.random.NextSingle() * MathF.Tau; //random rotation from 0..TAU
-        transform.scale = Vector2.One * ((glob.random.NextSingle() + 1F) * (MAX_SIZE / 2F)); //make the scaling random
+        transform.scale = Vector2.One * (glob.random.NextSingle() + 1F) * MAX_SIZE / 2F; //make the scaling random
         /* MAX_SIZE is divided by 2 because NextSingle produces a value between 0..1.
            We add 1 to make sure we don't get any zero issues. Making the range 1..2.
            Multiplying by MAX_SIZE then would equate to the Actual max size to be 2 * MAX_SIZE. */
@@ -39,17 +43,23 @@ internal class Astroid : GameObject
             transform.position.X = glob.random.Next(0, screenWidth);
         }
 
-        astroids = glob.asteroids;
+        radius = (glob.textures.astroid.Width / 2.0F * transform.scale.X) + (glob.textures.bullet.Width / 2.0F); // add the half of the bullet's texture's width, to compensate for
+        asteroids = glob.asteroids;
+    }
+
+    public bool OnAstroid(Vector2 pos, GlobalState glob)
+    {
+        return VectorDetection.InCircle(transform.position - pos, radius);
     }
 
     // makes the astroid move down and damages the player if it interacts
-    public void Update(Player player, Textures textures, int screenHeight)
+    public void Update(GlobalState glob, int screenHeight)
     {
         // move the astroid down
         transform.position.Y += -1 * transform.scale.X + MAX_SIZE;
 
         // if the astroid fell off the screen; destroy the astroid
-        if (transform.position.Y - (textures.astroid.Width * transform.scale.X) > screenHeight)
+        if (transform.position.Y - (glob.textures.astroid.Width * transform.scale.X) > screenHeight)
         {
             Dispose();
             return;
@@ -58,6 +68,11 @@ internal class Astroid : GameObject
         // rotate the astroid
         transform.rotation += MathF.Tau / 360 * -1 * (transform.scale.X - MAX_SIZE);
         transform.rotation %= MathF.Tau;
+
+#if DEBUG
+        if (glob.hitboxes)
+            glob.pcl.SetCircle((int)transform.position.X, (int)transform.position.Y, (int)radius, (Color)Colour.Green);
+#endif
     }
 
     // draws the astroid with the spriteBatch
@@ -83,7 +98,7 @@ internal class Astroid : GameObject
 
     protected override void OnDispose()
     {
-        astroids.Remove(this);
+        asteroids.Remove(this);
     }
 
 }

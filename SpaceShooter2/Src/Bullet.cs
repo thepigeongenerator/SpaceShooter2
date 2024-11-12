@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
+using ThePigeonGenerator.MonoGame.Render;
 
 namespace SpaceShooter2.Src;
 
@@ -23,11 +24,14 @@ internal class Bullet : GameObject
     }
 
     // makes the bullet move upwards and destroy any astroids in it's way (destroys once no longer visible)
-    public void Update(Textures textures, List<Astroid> asteroids)
+    public void Update(GlobalState glob)
     {
+        int w = glob.textures.bullet.Width;
+        int h = glob.textures.bullet.Height;
+        List<Astroid> asteroids = glob.asteroids;
         transform.position.Y -= SPEED;
 
-        if (transform.position.Y + (textures.bullet.Height * transform.scale.Y / 2F) < 0)
+        if (transform.position.Y + (h * transform.scale.Y / 2F) < 0)
         {
             Dispose();
             return;
@@ -36,7 +40,7 @@ internal class Bullet : GameObject
         for (int i = 0; i < asteroids.Count; i++)
         {
             //if the bullet is inside of the radius of the astroid
-            if (VectorDetection.InCircle(asteroids[i].transform.position - transform.position, textures.astroid.Width * asteroids[i].transform.scale.X))
+            if (asteroids[i].OnAstroid(transform.position, glob))
             {
                 //destroy the astroid if it isn't unbreakable
                 if (asteroids[i].unbreakable == false)
@@ -47,6 +51,11 @@ internal class Bullet : GameObject
                 return;
             }
         }
+
+#if DEBUG
+        if (glob.hitboxes)
+            glob.pcl.SetLine((int)transform.position.X, (int)transform.position.Y, (int)transform.position.X, 0, (Color)Colour.Green);
+#endif
     }
 
     // draws the bullet to the screen

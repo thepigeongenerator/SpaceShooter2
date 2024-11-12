@@ -67,6 +67,10 @@ public partial class SpaceShooter : Core.Game
 
         //create a player
         globalState.player = new Player(globalState.textures, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+#if DEBUG
+        globalState.pcl = new(GraphicsDevice, SCREEN_WIDTH, SCREEN_HEIGHT);
+#endif
     }
 
     protected override void Update(GameTime gameTime)
@@ -74,11 +78,19 @@ public partial class SpaceShooter : Core.Game
 #if DEBUG
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        if (globalState.hitboxesLock == false && Keyboard.GetState().IsKeyDown(Keys.F3))
+        {
+            globalState.hitboxes = !globalState.hitboxes;
+            globalState.hitboxesLock = true;
+        }
+        else if (Keyboard.GetState().IsKeyUp(Keys.F3))
+            globalState.hitboxesLock = false;
 #endif
 
         globalState.player.Update(SCREEN_WIDTH);
-        ForEachObject<Astroid>((astroid) => astroid.Update(globalState.player, globalState.textures, SCREEN_HEIGHT));
-        ForEachObject<Bullet>((bullet) => bullet.Update(globalState.textures, globalState.asteroids));
+        ForEachObject<Astroid>((astroid) => astroid.Update(globalState, SCREEN_HEIGHT));
+        ForEachObject<Bullet>((bullet) => bullet.Update(globalState));
 
         //create new bullet
         RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, BULLET_SPAWN_DELAY_MS, () =>
@@ -103,7 +115,15 @@ public partial class SpaceShooter : Core.Game
         ForEachObject<Astroid>((astroid) => astroid.Draw(globalState.textures, spriteBatch));
         ForEachObject<Bullet>((bullet) => bullet.Draw(globalState.textures, spriteBatch));
 
+#if DEBUG
+        globalState.pcl.Draw(spriteBatch);
+#endif
+
         spriteBatch.End();
+
+#if DEBUG
+        globalState.pcl.ClearBuffer(); // clear the internal buffer *after* drawing, otherwise it'll fail to draw
+#endif
 
         base.Draw(gameTime);
     }
