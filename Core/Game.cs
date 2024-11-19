@@ -9,9 +9,14 @@ namespace Core;
 public abstract class Game : Microsoft.Xna.Framework.Game
 {
     private static Game instance = null;
+    private bool initialized = false;
+    private bool loadedContent = false;
+
     internal static Game Instance => instance ?? throw new NullReferenceException("Tried to get the game's instance before the game has been made");
 
     internal readonly ObjectRegistry objectRegistry;
+    internal bool Initialized => initialized;
+    internal bool LoadedContent => loadedContent;
 
     protected abstract SpriteBatch SpriteBatch { get; set; }
 
@@ -30,6 +35,7 @@ public abstract class Game : Microsoft.Xna.Framework.Game
 
     protected override void Initialize()
     {
+        initialized = true;
         foreach (IInitialize initialize in objectRegistry.GetObjectsOfType<IInitialize>())
             initialize.Initialize();
 
@@ -38,8 +44,11 @@ public abstract class Game : Microsoft.Xna.Framework.Game
 
     protected override void LoadContent()
     {
+        loadedContent = true;
         foreach (ILoadContent loadContent in objectRegistry.GetObjectsOfType<ILoadContent>())
             loadContent.LoadContent(Content);
+
+        base.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)

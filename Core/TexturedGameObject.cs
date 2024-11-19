@@ -11,7 +11,7 @@ public class TexturedGameObject : GameObject, IDraw
     protected float textureDepth;
     protected bool runDraw;
 
-// constructure
+    // constructor
     public TexturedGameObject(
         Texture2D texture,
         SpriteEffects spriteEffects = SpriteEffects.None,

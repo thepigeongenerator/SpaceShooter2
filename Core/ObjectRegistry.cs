@@ -42,8 +42,19 @@ internal class ObjectRegistry
         // add the object to the object registry
         objectRegistry.AddLast(obj);
 
-        ExecIfMatch<IInitialize>(obj, o => initializes.AddLast(o));
-        ExecIfMatch<ILoadContent>(obj, o => loadContents.AddLast(o));
+        // add the object to the different "event" lists, for Initialize and LoadContent, call the method if it's already been ran
+        ExecIfMatch<IInitialize>(obj, o =>
+        {
+            initializes.AddLast(o);
+            if (Game.Instance.Initialized) o.Initialize();
+        });
+
+        ExecIfMatch<ILoadContent>(obj, o =>
+        {
+            loadContents.AddLast(o);
+            if (Game.Instance.LoadedContent) o.LoadContent(Game.Instance.Content);
+        });
+
         ExecIfMatch<IUpdate>(obj, o => updates.AddLast(o));
         ExecIfMatch<IDraw>(obj, o => draws.AddLast(o));
     }
