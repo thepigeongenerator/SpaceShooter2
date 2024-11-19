@@ -7,19 +7,23 @@ using SpaceShooter2.Src.Util;
 
 namespace SpaceShooter2.Src;
 
-internal class Player : GameObject
+internal class Player : TexturedGameObject, IUpdate
 {
+    private readonly GlobalState glob;
+
     public byte health = 0;
 
     // creates a new player at the centre of the screen
-    public Player(Textures textures)
+    public Player(GlobalState glob) : base(glob.textures.player.textures[0])
     {
         health = 10;
         transform.position = new Vector2(Const.SCREEN_WIDTH / 2);
         transform.scale = Vector2.One * 4.5F;
+        transform.origin = Vector2.One / 2.0F;
 
         //set the correct Y position for the player
-        transform.position.Y = Const.SCREEN_HEIGHT - textures.player.textures[textures.player.currentTexture].Height * transform.scale.Y / 2;
+        transform.position.Y = Const.SCREEN_HEIGHT - glob.textures.player.textures[0].Height * transform.scale.Y / 2;
+        this.glob = glob;
     }
 
     // allows the user to use input to update the player's position
@@ -36,33 +40,14 @@ internal class Player : GameObject
             transform.position.X %= Const.SCREEN_WIDTH;
         else if (transform.position.X < 0)
             transform.position.X += Const.SCREEN_WIDTH;
-    }
 
-    // draws the player to the screen
-    public void Draw(GlobalState glob, GameTime gameTime, SpriteBatch spriteBatch)
-    {
-        Textures textures = glob.textures;
-
-        //draw the texture
-        spriteBatch.Draw(
-            textures.player.textures[textures.player.currentTexture],
-            transform.position,
-            null,
-            Color.White,
-            transform.rotation,
-            new Vector2(
-                textures.player.textures[textures.player.currentTexture].Width / 2,
-                textures.player.textures[textures.player.currentTexture].Height / 2),
-            transform.scale,
-            SpriteEffects.None,
-            0.0F);
-
-        //update the texture index
-        TimeUtils.RunWhenTimer(gameTime, ref glob.timings.playerSwitchTextureTime, 100, () => {
-            textures.player.currentTexture++; //increase the index of the active texture
-            if (textures.player.currentTexture >= textures.player.textures.Count)
+        //update the texture index if the timer ran out
+        TimeUtils.RunWhenTimer(glob.gameTime, ref glob.timings.playerSwitchTextureTime, 100, () =>
+        {
+            glob.textures.player.currentTexture++; //increase the index of the active texture
+            if (glob.textures.player.currentTexture >= glob.textures.player.textures.Count)
             {
-                textures.player.currentTexture = 0;
+                glob.textures.player.currentTexture = 0;
             }
         });
     }

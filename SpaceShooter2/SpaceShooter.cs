@@ -12,7 +12,7 @@ public partial class SpaceShooter : Core.Game
 {
     //monogame variables
     private readonly GraphicsDeviceManager graphics;
-    private SpriteBatch spriteBatch;
+    protected override SpriteBatch SpriteBatch { get; set; }
 
     //game variables
     private GlobalState globalState;
@@ -45,22 +45,19 @@ public partial class SpaceShooter : Core.Game
         Console.WriteLine("using seed: {0}", seed);
     }
 
-
-    protected override void Initialize() => base.Initialize();
-
     protected override void LoadContent()
     {
-        spriteBatch = new SpriteBatch(GraphicsDevice);
+        SpriteBatch = new SpriteBatch(GraphicsDevice);
 
         //load all the textures
-        globalState.textures.astroid = Content.Load<Texture2D>("astroid");
-        globalState.textures.bullet = Content.Load<Texture2D>("bullet");
-        globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_0"));
-        globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_1"));
-        globalState.textures.player.textures.Add(Content.Load<Texture2D>("spaceship/spaceship_2"));
+        globalState.textures.astroid = Content.Load<Texture2D>(Const.TEXTURE_ASTEROID);
+        globalState.textures.bullet = Content.Load<Texture2D>(Const.TEXTURE_BULLET);
+        globalState.textures.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_0));
+        globalState.textures.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_1));
+        globalState.textures.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_2));
 
         //create a player
-        globalState.player = new Player(globalState.textures);
+        globalState.player = new Player(globalState);
         globalState.pcl = new(GraphicsDevice);
     }
 
@@ -71,6 +68,9 @@ public partial class SpaceShooter : Core.Game
             Exit();
 #endif
 
+        globalState.gameTime = gameTime;
+
+        // if F3 is pressed, toggle hitboxes mode
         if (globalState.hitboxesLock == false && Keyboard.GetState().IsKeyDown(Keys.F3))
         {
             globalState.hitboxes = !globalState.hitboxes;
@@ -78,10 +78,6 @@ public partial class SpaceShooter : Core.Game
         }
         else if (Keyboard.GetState().IsKeyUp(Keys.F3))
             globalState.hitboxesLock = false;
-
-        globalState.player.Update();
-        ForEachObject<Astroid>((astroid) => astroid.Update(globalState));
-        ForEachObject<Bullet>((bullet) => bullet.Update(globalState));
 
         //create new bullet
         TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, Const.BULLET_SPAWN_DELAY_MS, () =>
@@ -91,6 +87,7 @@ public partial class SpaceShooter : Core.Game
         TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.astroidSpawnTime, Const.ASTROID_SPAWN_DELAY_MS, () =>
             globalState.asteroids.Add(new Astroid(globalState, Const.SCREEN_WIDTH)));
 
+
         base.Update(gameTime);
     }
 
@@ -99,16 +96,15 @@ public partial class SpaceShooter : Core.Game
     {
         GraphicsDevice.Clear(new Color(0xFF101010));
 
-        spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        // begin the sprite batch
+        SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-        //draw textures
-        globalState.player.Draw(globalState, gameTime, spriteBatch);
-        ForEachObject<Astroid>((astroid) => astroid.Draw(globalState.textures, spriteBatch));
-        ForEachObject<Bullet>((bullet) => bullet.Draw(globalState.textures, spriteBatch));
+        // draw everything
+        DrawObjects();
+        globalState.pcl.Draw(SpriteBatch);
 
-        globalState.pcl.Draw(spriteBatch);
-
-        spriteBatch.End();
+        // end the sprite batch
+        SpriteBatch.End();
 
         globalState.pcl.ClearBuffer(); // clear the internal buffer *after* drawing, otherwise it'll fail to draw
 

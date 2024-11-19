@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using ThePigeonGenerator.MonoGame.Render;
 
 namespace SpaceShooter2.Src.Data;
@@ -13,6 +14,7 @@ internal record GlobalState // store the reference instead of copying everything
     public Player player;
     public Timings timings;
     public Textures textures;
+    public GameTime gameTime;
 
     // debug
     public PixelControlLayer pcl;

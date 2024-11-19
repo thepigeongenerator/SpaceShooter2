@@ -1,6 +1,8 @@
+// TODO: currently Initialize() and LoadContent() will not be called after the game has gone past these steps (currently not an issue as they go unused, but will eventually be)
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Core;
 
@@ -9,12 +11,9 @@ public abstract class Game : Microsoft.Xna.Framework.Game
     private static Game instance = null;
     internal static Game Instance => instance ?? throw new NullReferenceException("Tried to get the game's instance before the game has been made");
 
-    // using LinkedList instead of a List, because it's faster when creating new objects
-    // removing makes no difference, as it only needs to climb till the correct gameObject. Where in a list it'd need to move all the elements after one forward.
-    private readonly Dictionary<Type, LinkedList<GameObject>> objectRegistry = null;
+    internal readonly ObjectRegistry objectRegistry;
 
-    // stores the gameObjects that need to be deleted
-    private readonly List<GameObject> disposeObjects = null;
+    protected abstract SpriteBatch SpriteBatch { get; set; }
 
     public Game()
     {
@@ -22,47 +21,42 @@ public abstract class Game : Microsoft.Xna.Framework.Game
         instance = this;
 
         objectRegistry = new();
-        disposeObjects = new();
+    }
+
+    public IEnumerable<T> GetObjectsOfType<T>() where T : class
+    {
+        return objectRegistry.GetObjectsOfType<T>();
+    }
+
+    protected override void Initialize()
+    {
+        foreach (IInitialize initialize in objectRegistry.GetObjectsOfType<IInitialize>())
+            initialize.Initialize();
+
+        base.Initialize();
+    }
+
+    protected override void LoadContent()
+    {
+        foreach (ILoadContent loadContent in objectRegistry.GetObjectsOfType<ILoadContent>())
+            loadContent.LoadContent(Content);
     }
 
     protected override void Update(GameTime gameTime)
     {
-        // remove the gameObjects that are scheduled for deletion
-        while (disposeObjects.Count > 0)
-        {
-            Type type = disposeObjects[0].GetType();
-            objectRegistry[type].Remove(disposeObjects[0]);
-            disposeObjects.RemoveAt(0);
-        }
+
+        foreach (IUpdate update in objectRegistry.GetObjectsOfType<IUpdate>())
+            update.Update();
+
+        // dispose the gameObjects that were scheduled for deletion
+        objectRegistry.DisposeGameObjects();
 
         base.Update(gameTime);
     }
 
-    public void ForEachObject<T>(Action<T> update) where T : class
+    protected void DrawObjects()
     {
-        // do nothing if the object registry doesn't contain the type
-        if (objectRegistry.ContainsKey(typeof(T)) == false)
-            return;
-
-        // call the specified update function for each item, passing itself as an argument
-        foreach (GameObject obj in objectRegistry[typeof(T)])
-            update.Invoke(obj as T);
-    }
-
-    // adds the gameObject to the registry
-    internal void AddGameObject(GameObject obj)
-    {
-        // add a new list if this type hasn't been added to the registry yet
-        Type type = obj.GetType(); // if obj has been inherited, this'll prefer that type
-        if (objectRegistry.ContainsKey(type) == false)
-            objectRegistry.Add(type, new());
-
-        objectRegistry[type].AddLast(obj);
-    }
-
-    // schedules the gameObject for deletion
-    internal void RemoveGameObject(GameObject obj)
-    {
-        disposeObjects.Add(obj);
+        foreach (IDraw draw in objectRegistry.GetObjectsOfType<IDraw>())
+            draw.Draw(SpriteBatch);
     }
 }
