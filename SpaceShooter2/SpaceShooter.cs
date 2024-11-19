@@ -15,7 +15,7 @@ public partial class SpaceShooter : Core.Game
     protected override SpriteBatch SpriteBatch { get; set; }
 
     //game variables
-    private GlobalState globalState;
+    private readonly GlobalState globalState;
 
     public SpaceShooter()
     {
