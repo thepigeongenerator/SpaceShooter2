@@ -14,8 +14,9 @@ internal class ObjectRegistry
     private readonly LinkedList<IUpdate> updates = null;
     private readonly LinkedList<IDraw> draws = null;
 
-    // stores the gameObjects that need to be deleted
-    private readonly List<GameObject> disposeObjects = null;
+    // queues for game object deletion / creation
+    private readonly Queue<GameObject> createQueue = null;      // I'm honestly sad that this is a default type, I implemented my own
+    private readonly Queue<GameObject> disposeQueue = null;
 
     public ObjectRegistry()
     {
@@ -26,7 +27,8 @@ internal class ObjectRegistry
         updates = new();
         draws = new();
 
-        disposeObjects = new();
+        createQueue = new();
+        disposeQueue = new();
     }
 
     // executes exec if obj is castable to T
@@ -37,48 +39,52 @@ internal class ObjectRegistry
     }
 
     // adds the gameObject to the registry
-    public void AddGameObject(GameObject obj)
-    {
-        // add the object to the object registry
-        objectRegistry.AddLast(obj);
-
-        // add the object to the different "event" lists, for Initialize and LoadContent, call the method if it's already been ran
-        ExecIfMatch<IInitialize>(obj, o =>
-        {
-            initializes.AddLast(o);
-            if (Game.Instance.Initialized) o.Initialize();
-        });
-
-        ExecIfMatch<ILoadContent>(obj, o =>
-        {
-            loadContents.AddLast(o);
-            if (Game.Instance.LoadedContent) o.LoadContent(Game.Instance.Content);
-        });
-
-        ExecIfMatch<IUpdate>(obj, o => updates.AddLast(o));
-        ExecIfMatch<IDraw>(obj, o => draws.AddLast(o));
-    }
+    public void AddGameObject(GameObject obj) => createQueue.Enqueue(obj);
 
     // schedules the gameObject for deletion
-    public void RemoveGameObject(GameObject obj)
+    public void RemoveGameObject(GameObject obj) => disposeQueue.Enqueue(obj);
+
+    // create the queued game objects
+    public void CreateGameObjects()
     {
-        disposeObjects.Add(obj);
+        while (createQueue.Count > 0)
+        {
+            GameObject obj = createQueue.Dequeue();
+
+            // add the object to the object registry
+            objectRegistry.AddLast(obj);
+
+            // add the object to the different "event" lists, for Initialize and LoadContent, call the method if it's already been ran
+            ExecIfMatch<IInitialize>(obj, o =>
+            {
+                initializes.AddLast(o);
+                if (Game.Instance.Initialized) o.Initialize();
+            });
+
+            ExecIfMatch<ILoadContent>(obj, o =>
+            {
+                loadContents.AddLast(o);
+                if (Game.Instance.LoadedContent) o.LoadContent(Game.Instance.Content);
+            });
+
+            ExecIfMatch<IUpdate>(obj, o => updates.AddLast(o));
+            ExecIfMatch<IDraw>(obj, o => draws.AddLast(o));
+        }
     }
 
-    // disposes of all the game objects
+    // dispose of the queued game objects
     public void DisposeGameObjects()
     {
         // remove the gameObjects that are scheduled for deletion
-        while (disposeObjects.Count > 0)
+        while (disposeQueue.Count > 0)
         {
-            objectRegistry.Remove(disposeObjects[0]);
-            ExecIfMatch<IInitialize>(disposeObjects[0], o => initializes.Remove(o));
-            ExecIfMatch<ILoadContent>(disposeObjects[0], o => loadContents.Remove(o));
-            ExecIfMatch<IUpdate>(disposeObjects[0], o => updates.Remove(o));
-            ExecIfMatch<IDraw>(disposeObjects[0], o => draws.Remove(o));
+            GameObject obj = disposeQueue.Dequeue();
 
-            // remove the currently disposed GameObject
-            disposeObjects.RemoveAt(0);
+            objectRegistry.Remove(obj);
+            ExecIfMatch<IInitialize>(obj, o => initializes.Remove(o));
+            ExecIfMatch<ILoadContent>(obj, o => loadContents.Remove(o));
+            ExecIfMatch<IUpdate>(obj, o => updates.Remove(o));
+            ExecIfMatch<IDraw>(obj, o => draws.Remove(o));
         }
     }
 

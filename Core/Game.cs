@@ -33,11 +33,20 @@ public abstract class Game : Microsoft.Xna.Framework.Game
         return objectRegistry.GetObjectsOfType<T>();
     }
 
+    // executes the scheduled actions DO NOT CALL UNLESS YOU KNOW WHAT YOU'RE DOING
+    protected void ExecuteScheduled()
+    {
+        objectRegistry.CreateGameObjects();
+        objectRegistry.DisposeGameObjects();
+    }
+
     protected override void Initialize()
     {
         initialized = true;
         foreach (IInitialize initialize in objectRegistry.GetObjectsOfType<IInitialize>())
             initialize.Initialize();
+
+        ExecuteScheduled();
 
         base.Initialize();
     }
@@ -48,17 +57,17 @@ public abstract class Game : Microsoft.Xna.Framework.Game
         foreach (ILoadContent loadContent in objectRegistry.GetObjectsOfType<ILoadContent>())
             loadContent.LoadContent(Content);
 
+        ExecuteScheduled();
+
         base.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)
     {
-
         foreach (IUpdate update in objectRegistry.GetObjectsOfType<IUpdate>())
             update.Update();
 
-        // dispose the gameObjects that were scheduled for deletion
-        objectRegistry.DisposeGameObjects();
+        ExecuteScheduled();
 
         base.Update(gameTime);
     }
