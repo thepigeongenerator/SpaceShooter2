@@ -1,6 +1,5 @@
 using Core;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
@@ -31,11 +30,11 @@ internal class Player : TexturedGameObject, IUpdate
     {
         //update player's position based on input
         if (Keyboard.GetState().IsKeyDown(Keys.A))
-            transform.position.X -= 10;
+            transform.position.X -= Const.PLAYER_SPEED * glob.gameTime.DeltaTime();
         if (Keyboard.GetState().IsKeyDown(Keys.D))
-            transform.position.X += 10;
+            transform.position.X += Const.PLAYER_SPEED * glob.gameTime.DeltaTime();
 
-        //flip the player's position to the other side of the screen if they go "out of boubds"
+        //flip the player's position to the other side of the screen if they go "out of bounds"
         if (transform.position.X > Const.SCREEN_WIDTH)
             transform.position.X %= Const.SCREEN_WIDTH;
         else if (transform.position.X < 0)

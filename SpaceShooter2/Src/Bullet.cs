@@ -31,7 +31,7 @@ internal class Bullet : TexturedGameObject, IUpdate
         int w = glob.textures.bullet.Width;
         int h = glob.textures.bullet.Height;
         List<Astroid> asteroids = glob.asteroids;
-        transform.position.Y -= Const.BULLET_SPEED;
+        transform.position.Y -= Const.BULLET_SPEED * glob.gameTime.DeltaTime();
 
         if (transform.position.Y + (h * transform.scale.Y / 2F) < 0)
         {

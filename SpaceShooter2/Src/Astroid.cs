@@ -5,6 +5,7 @@ using SpaceShooter2.Src.Data;
 using Core;
 using ThePigeonGenerator.MonoGame.Render;
 using SpaceShooter2.Src.Util;
+using System.Diagnostics;
 
 namespace SpaceShooter2.Src;
 
@@ -58,8 +59,8 @@ internal class Astroid : TexturedGameObject, IUpdate
     // makes the astroid move down and damages the player if it interacts
     public void Update()
     {
-        // move the astroid down
-        transform.position.Y += -1 * transform.scale.X + Const.MAX_ASTROID_SIZE;
+        // move the astroid down (bigger asteroids move slower)
+        transform.position.Y += ((-1 * transform.scale.X) + Const.MAX_ASTROID_SIZE) * Const.ASTEROID_SPEED * glob.gameTime.DeltaTime();
 
         // if the astroid fell off the screen; destroy the astroid
         if (transform.position.Y - radius > Const.SCREEN_HEIGHT)
@@ -68,9 +69,9 @@ internal class Astroid : TexturedGameObject, IUpdate
             return;
         }
 
-        // rotate the astroid
-        transform.rotation += MathF.Tau / 360 * -1 * (transform.scale.X - Const.MAX_ASTROID_SIZE);
-        transform.rotation %= MathF.Tau;
+        // rotate the asteroid clockwise (bigger asteroids rotate slower)
+        transform.rotation += MathF.Tau / 360 * -1 * (transform.scale.X - Const.MAX_ASTROID_SIZE) * Const.ASTEROID_ROT_SPEED * glob.gameTime.DeltaTime();
+        transform.rotation %= MathF.Tau; // if a rotation of 360° has been achieved, wrap it back around to 0... but with radians
 
         if (glob.hitboxes)
             glob.pcl.SetCircle((int)transform.position.X, (int)transform.position.Y, (int)radius, (Color)Colour.Green);
