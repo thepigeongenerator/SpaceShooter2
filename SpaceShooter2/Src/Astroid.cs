@@ -52,7 +52,7 @@ internal class Astroid : TexturedGameObject, IUpdate
 
     public bool OnAstroid(Vector2 pos)
     {
-        return VectorDetection.InCircle(transform.position - pos, radius);
+        return IntersectUtils.PointIntersectsCircle(transform.position.X, transform.position.Y, radius, pos.X, pos.Y);
     }
 
     // makes the astroid move down and damages the player if it interacts
