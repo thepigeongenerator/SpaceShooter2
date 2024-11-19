@@ -25,6 +25,8 @@ public partial class SpaceShooter : Core.Game
 #else
         int seed = (int)DateTime.Now.TimeOfDay.TotalSeconds; //use a seed using time
 #endif
+        Console.WriteLine("using seed: {0}", seed);
+
 
         globalState = new GlobalState()
         {
@@ -38,11 +40,13 @@ public partial class SpaceShooter : Core.Game
         // game settings
         Content.RootDirectory = "Content";
         IsMouseVisible = false;
+
+        // graphics settings
         graphics.PreferredBackBufferWidth = Const.SCREEN_WIDTH;
         graphics.PreferredBackBufferHeight = Const.SCREEN_HEIGHT;
+        graphics.SynchronizeWithVerticalRetrace = Const.VSYNC;
         graphics.IsFullScreen = false;
-
-        Console.WriteLine("using seed: {0}", seed);
+        TargetElapsedTime = TimeSpan.FromSeconds(1.0F / Const.UPDATES_PER_SECOND);
     }
 
     protected override void LoadContent()

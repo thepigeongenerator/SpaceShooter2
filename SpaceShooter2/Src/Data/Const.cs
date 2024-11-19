@@ -1,11 +1,10 @@
-#if DEBUG
-#endif
-
 namespace SpaceShooter2.Src.Data;
 
 // contains the constants
 internal static class Const
 {
+    public const bool VSYNC = true;                 // whether frames should be rendered based on the monitor's refresh rate
+    public const int UPDATES_PER_SECOND = 60;       // how many times per second the game should call Update
     public const int BULLET_SPAWN_DELAY_MS = 500;   // delay in milliseconds between bullet spawns
     public const int ASTROID_SPAWN_DELAY_MS = 500;  // delay in milliseconds between astroid spawns
     public const int SCREEN_WIDTH = 980;            // width of the window
