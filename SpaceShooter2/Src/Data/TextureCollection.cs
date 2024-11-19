@@ -6,8 +6,4 @@ internal record TextureCollection // store the reference, so you can modify the 
 {
     public int currentTexture = 0;
     public List<Texture2D> textures = new();
-
-    public TextureCollection()
-    {
-    }
 }

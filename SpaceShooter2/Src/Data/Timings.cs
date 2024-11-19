@@ -8,7 +8,4 @@ internal record Timings {
     public TimeSpan bulletSpawnTime = TimeSpan.Zero;
     public TimeSpan astroidSpawnTime = TimeSpan.Zero;
     public TimeSpan playerSwitchTextureTime = TimeSpan.Zero;
-
-    public Timings() {
-    }
 }

@@ -5,7 +5,6 @@ using SpaceShooter2.Src.Data;
 using Core;
 using ThePigeonGenerator.MonoGame.Render;
 using SpaceShooter2.Src.Util;
-using System.Diagnostics;
 
 namespace SpaceShooter2.Src;
 
