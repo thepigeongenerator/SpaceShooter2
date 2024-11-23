@@ -18,7 +18,7 @@ jobs:
         project-name: "${{env.BUILD_PROJECT}}"
 
     - name: compress build files
-      run: zip "${{env.BUILD_PROJECT}}_win-64.zip" "${{env.BUILD_PROJECT}}/bin/Release/net6.0/*" -r
+      run: zip "${{env.BUILD_PROJECT}}_win-64.zip" "${{env.BUILD_PROJECT}}/bin/Release/net6.0/"* -r
 
     - name: upload release assets
       uses: softprops/action-gh-release@v1
