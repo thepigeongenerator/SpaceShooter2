@@ -40,7 +40,7 @@ jobs:
             echo "created $fname"
         done
         echo "created files: $produced_files"
-        echo "PRODUCED_FILES=$produced_files" >> ${{github.env}}
+        echo "PRODUCED_FILES=\"$produced_files\"" >> ${{github.env}}
 
     - name: upload release assets
       uses: softprops/action-gh-release@v2
