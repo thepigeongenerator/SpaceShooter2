@@ -31,7 +31,7 @@ jobs:
             echo "processing architecture '$arch'"
             dotnet publish ${{env.BUILD_PROJECT}} -c Release --self-contained -r "$arch"
 
-            fname="${{github.workspace}}/builds/$arch_${{env.BUILD_PROJECT}}.zip"
+            fname="${{github.workspace}}/builds/${arch}_${{env.BUILD_PROJECT}}.zip"
             produced_files="$fname $produced_files"
 
             cd "${{env.BUILD_PROJECT}}/bin/Release/net6.0/$arch"
