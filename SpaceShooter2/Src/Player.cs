@@ -1,4 +1,5 @@
 using Core;
+using Core.Polygons;
 using Core.Util;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src.Data;
@@ -10,6 +11,8 @@ internal class Player : TexturedGameObject, IUpdate
 {
     private readonly GlobalState glob;
 
+    public readonly Triangle hitbox;
+
     public byte health = 0;
 
     // creates a new player at the centre of the screen
@@ -20,8 +23,16 @@ internal class Player : TexturedGameObject, IUpdate
         transform.scale = Vector2.One * 4.5F;
         transform.origin = Vector2.One / 2.0F;
 
+        {
+            float x = Width / 2;
+            float y = Height / 2;
+            hitbox = new(
+                new(0, -y),
+                new(x, y),
+                new(-x, y));
+        }
         //set the correct Y position for the player
-        transform.position.Y = Const.SCREEN_HEIGHT - glob.textures.player.textures[0].Height * transform.scale.Y / 2;
+        transform.position.Y = Const.SCREEN_HEIGHT - Height / 2;
         this.glob = glob;
     }
 
@@ -39,6 +50,9 @@ internal class Player : TexturedGameObject, IUpdate
             transform.position.X %= Const.SCREEN_WIDTH;
         else if (transform.position.X < 0)
             transform.position.X += Const.SCREEN_WIDTH;
+
+        if (glob.hitboxes)
+            glob.pcl.SetPolygon(hitbox, transform.position, Color.Green);
 
         //update the texture index if the timer ran out
         TimeUtils.RunWhenTimer(glob.gameTime, ref glob.timings.playerSwitchTextureTime, 100, () =>

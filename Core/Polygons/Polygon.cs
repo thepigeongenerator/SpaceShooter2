@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Core.Util;
 using Microsoft.Xna.Framework;
 
@@ -16,9 +17,9 @@ public class Polygon2
 
         for (int i = 0; i < vertices.Length; i++)
         {
-            ref PolyNode prev = ref this.vertices[i == vertices.Length - 1 ? 0 : i];
+            ref PolyNode prev = ref this.vertices[i == 0 ? vertices.Length - 1 : i - 1];
             ref PolyNode curr = ref this.vertices[i];
-            ref PolyNode next = ref this.vertices[i == 0 ? vertices.Length - 1 : i];
+            ref PolyNode next = ref this.vertices[i == vertices.Length - 1 ? 0 : i + 1];
 
             curr = new(vertices[i], prev, next);
 
