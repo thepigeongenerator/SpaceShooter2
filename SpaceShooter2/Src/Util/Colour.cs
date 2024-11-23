@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using Microsoft.Xna.Framework;
 
 namespace SpaceShooter2.Src.Util;
 

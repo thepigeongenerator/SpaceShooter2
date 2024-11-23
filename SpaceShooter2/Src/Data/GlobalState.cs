@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using ThePigeonGenerator.MonoGame.Render;
 
 namespace SpaceShooter2.Src.Data;

@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceShooter2.Src.Data;
 using Core;

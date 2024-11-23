@@ -1,4 +1,6 @@
-﻿//TODO: add sounds + music?
+﻿global using Microsoft.Xna.Framework;
+
+//TODO: add sounds + music?
 internal class Program {
     //entry point of the application, called by OS
     private static int Main() {
