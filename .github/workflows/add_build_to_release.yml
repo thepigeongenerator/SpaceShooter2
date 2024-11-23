@@ -20,10 +20,15 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
+    - name: restore dependencies
+      run: dotnet restore ${{env.BUILD_PROJECT}}
+
     - name: publish and compress architectures
       run: |
+        produced_files=""
         [ ! -d "${{github.workspace}}/builds" ] && mkdir "${{github.workspace}}/builds"
         for arch in ${{env.PUBLISH_ARCHITECTURES}}; do
+            echo "processing architecture '$arch'"
             dotnet publish ${{env.BUILD_PROJECT}} -c Release --self-contained -r "$arch"
 
             fname="${{github.workspace}}/builds/$arch_${{env.BUILD_PROJECT}}.zip"
@@ -34,8 +39,8 @@ jobs:
             cd -
             echo "created $fname"
         done
-        echo "created files: $PRODUCED_FILES"
-        echo "PRODUCED_FILES=$PRODUCED_FILES" >> ${{github.env}}
+        echo "created files: $produced_files"
+        echo "PRODUCED_FILES=$produced_files" >> ${{github.env}}
 
     - name: upload release assets
       uses: softprops/action-gh-release@v2
