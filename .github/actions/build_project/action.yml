@@ -15,9 +15,12 @@ runs:
 
     - name: restore dependencies
       run: dotnet restore "${{inputs.project-name}}"
+      shell: bash
 
     - name: build release
       run: dotnet build "${{inputs.project-name}}" --no-restore --configuration Release
+      shell: bash
 
     - name: run tests test
       run: dotnet test "${{inputs.project-name}}" --no-build --verbosity normal
+      shell: bash
