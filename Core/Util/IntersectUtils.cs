@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Core.Polygons;
 
 namespace Core.Util;
 public static class IntersectUtils
@@ -29,7 +30,7 @@ public static class IntersectUtils
         return (x1 * x1) + (y1 * y1) < r * r;
     }
 
-// checks whether a line inter
+    // checks whether a line inter
     public static bool LineIntersectsCircle(float cx, float cy, float r, float ax, float ay, float bx, float by)
     {
         // make the coordinates relative to the circle's coordinates (circle's pos becomes (0,0))
@@ -82,19 +83,23 @@ public static class IntersectUtils
         return false;
     }
 
-    // checks whether a rectangle intersects with a circle of radius r
-    public static bool IntersectsCircle(float cx, float cy, float r, float x1, float y1, float w1, float h1)
+    // checks whether a polygon intersects with a circle of radius r
+    public static bool PolygonIntersectsCircle(this Polygon2 polygon, float cx, float cy, float r)
     {
-        float x2 = x1 + w1;
-        float y2 = y1 + h1;
+        // loops through the polygon's vertices, and check whether the line intersects with our circle
+        for (int i = 0; i < polygon.vertices.Length; i++)
+        {
+            if (LineIntersectsCircle(
+                cx, cy, r,
+                polygon.vertices[i].position.X,
+                polygon.vertices[i].position.Y,
+                polygon.vertices[i].next.position.X,
+                polygon.vertices[i].next.position.Y))
+            {
+                return true;
+            }
+        }
 
-        // A---B
-        // C---D
-        // there is a slight issue, where if the rect is *entirely* contained within the circle (without the centre being contained within it), the value will equate to FALSE.
-        return
-            LineIntersectsCircle(cx, cy, r, x1, y1, x2, y1) ||  // AB
-            LineIntersectsCircle(cx, cy, r, x2, y1, x2, y2) ||  // BC
-            LineIntersectsCircle(cx, cy, r, x2, y2, x1, y2) ||  // CD
-            LineIntersectsCircle(cx, cy, r, x1, y2, x1, y1);    // DA
+        return false;
     }
 }
