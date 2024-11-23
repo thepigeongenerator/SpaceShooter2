@@ -54,7 +54,7 @@ internal class Bullet : TexturedGameObject, IUpdate
         }
 
         if (glob.hitboxes)
-            glob.pcl.SetLine((int)transform.position.X, (int)transform.position.Y, (int)transform.position.X, 0, (Color)Colour.Green);
+            glob.pcl.SetLine((int)transform.position.X, (int)transform.position.Y, (int)transform.position.X, 0, (Color)Colour.Blue);
     }
 
     // cleans up the bullet references
