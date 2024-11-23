@@ -27,15 +27,18 @@ jobs:
             dotnet publish ${{env.BUILD_PROJECT}} -c Release --self-contained -r "$arch"
 
             fname="${{github.workspace}}/builds/$arch_${{env.BUILD_PROJECT}}.zip"
-            PRODUCED_FILES="$fname ${{env.PRODUCED_FILES}}"
+            produced_files="$fname $produced_files"
 
             cd "${{env.BUILD_PROJECT}}/bin/Release/net6.0/$arch"
             zip $fname *
             cd -
+            echo "created $fname"
         done
+        echo "created files: $PRODUCED_FILES"
+        echo "PRODUCED_FILES=$PRODUCED_FILES" >> ${{github.env}}
 
     - name: upload release assets
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{github.event.release.tag_name}}
         files: "${{env.PRODUCED_FILES}}"
