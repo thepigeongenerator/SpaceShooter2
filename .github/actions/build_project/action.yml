@@ -1,7 +1,9 @@
 name: build_project
 
-env:
-  BUILD_PROJECT: "SpaceShooter2"
+inputs:
+  project-name:
+    description: 'the name of the project to execute this action on'
+    required: true
 
 runs:
   using: "composite"
@@ -12,21 +14,10 @@ runs:
         dotnet-version: 6.0.x
 
     - name: restore dependencies
-      run: dotnet restore "$BUILD_PROJECT"
+      run: dotnet restore "${{inputs.project-name}}"
 
     - name: build release
-      run: dotnet build "$BUILD_PROJECT" --no-restore --configuration Release
+      run: dotnet build "${{inputs.project-name}}" --no-restore --configuration Release
 
     - name: run tests test
-      run: dotnet test "$BUILD_PROJECT" --no-build --verbosity normal
-
-    - name: compress build files
-      run: zip "$BUILD_PROJECT_win-64.zip" "$BUILD_PROJECT/bin/Release/net6.0/*" -r
-
-    - name: upload release assets
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ github.event.release.tag_name }}
-        files: "./$BUILD_PROJECT_win-64.zip"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet test "${{inputs.project-name}}" --no-build --verbosity normal
