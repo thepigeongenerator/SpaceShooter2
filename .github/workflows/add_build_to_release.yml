@@ -1,0 +1,27 @@
+name: add_build_to_release
+
+on:
+  release:
+    types: [ "created" ]
+
+env:
+  BUILD_PROJECT: "SpaceShooter2"
+
+jobs:
+  add_build_to_release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: ./.github/actions/build_project
+
+    - name: compress build files
+      run: zip "$BUILD_PROJECT_win-64.zip" "$BUILD_PROJECT/bin/Release/net6.0/*" -r
+
+    - name: upload release assets
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.event.release.tag_name }}
+        files: "./$BUILD_PROJECT_win-64.zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
