@@ -1,0 +1,26 @@
+name: build_project
+
+inputs:
+  project-name:
+    description: 'the name of the project to execute this action on'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+
+    - name: restore dependencies
+      run: dotnet restore "${{inputs.project-name}}"
+      shell: bash
+
+    - name: build release
+      run: dotnet build "${{inputs.project-name}}" --no-restore --configuration Release
+      shell: bash
+
+    - name: run tests test
+      run: dotnet test "${{inputs.project-name}}" --no-build --verbosity normal
+      shell: bash
