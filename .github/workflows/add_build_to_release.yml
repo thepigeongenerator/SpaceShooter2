@@ -32,7 +32,7 @@ jobs:
 
             fname="${{github.workspace}}/builds/${arch}_${{env.BUILD_PROJECT}}.zip"
             cd "${{env.BUILD_PROJECT}}/bin/Release/net6.0/$arch"
-            zip $fname *
+            zip $fname * -r
             cd -
             echo "created $fname"
         done
