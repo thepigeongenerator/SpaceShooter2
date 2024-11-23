@@ -27,7 +27,7 @@ jobs:
             dotnet publish ${{env.BUILD_PROJECT}} -c Release --self-contained -r "$arch"
 
             fname="${{github.workspace}}/builds/$arch_${{env.BUILD_PROJECT}}.zip"
-            ${{env.PRODUCED_FILES}}="$fname ${{env.PRODUCED_FILES}}"
+            PRODUCED_FILES="$fname ${{env.PRODUCED_FILES}}"
 
             cd "${{env.BUILD_PROJECT}}/bin/Release/net6.0/$arch"
             zip $fname *
