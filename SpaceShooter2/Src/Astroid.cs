@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceShooter2.Src.Data;
 using Core;
+using Core.Util;
 using ThePigeonGenerator.MonoGame.Render;
 using SpaceShooter2.Src.Util;
 

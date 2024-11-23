@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core;
+using Core.Util;
 using Microsoft.Xna.Framework;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;

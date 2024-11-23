@@ -1,9 +1,9 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 
-namespace SpaceShooter2.Src.Util;
+namespace Core.Util;
 
-internal static class Extensions
+public static class Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float DeltaTime(this GameTime gameTime) => (float)gameTime.ElapsedGameTime.TotalSeconds;
