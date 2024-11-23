@@ -7,6 +7,7 @@ on:
 env:
   BUILD_PROJECT: "SpaceShooter2"
   PUBLISH_ARCHITECTURES: "linux-x64 win-x64"
+  PRODUCED_FILES: ""
 
 jobs:
   add_build_to_release:
@@ -19,19 +20,17 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
-    - name: publish linux-x64
-      run: dotnet publish SpaceShooter2 -c Release -r linux-x64
-
-    - name: publish win-x64
-      run: dotnet publish SpaceShooter2 -c Release -r linux-x64
-
     - name: publish and compress architectures
       run: |
         [ ! -d "${{github.workspace}}/builds" ] && mkdir "${{github.workspace}}/builds"
         for arch in ${{env.PUBLISH_ARCHITECTURES}}; do
-            dotnet publish ${{env.BUILD_PROJECT}} -c Release -r "$arch"
+            dotnet publish ${{env.BUILD_PROJECT}} -c Release --self-contained -r "$arch"
+
+            fname="${{github.workspace}}/builds/$arch_${{env.BUILD_PROJECT}}.zip"
+            ${{env.PRODUCED_FILES}}="$fname ${{env.PRODUCED_FILES}}"
+
             cd "${{env.BUILD_PROJECT}}/bin/Release/net6.0/$arch"
-            zip "${{github.workspace}}/builds/$arch_${{env.BUILD_PROJECT}}.zip" *
+            zip $fname *
             cd -
         done
 
@@ -39,7 +38,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{github.event.release.tag_name}}
-        files: "${{github.workspace}}/builds/*.zip"
+        files: "${{env.PRODUCED_FILES}}"
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
