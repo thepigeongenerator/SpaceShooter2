@@ -18,7 +18,7 @@ runs:
       shell: bash
 
     - name: build release
-      run: dotnet build "${{inputs.project-name}}" --no-restore --configuration Release
+      run: dotnet build "${{inputs.project-name}}" --no-restore --warnaserror --configuration Release
       shell: bash
 
     - name: run tests test
