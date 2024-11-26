@@ -11,7 +11,7 @@ internal class Player : TexturedGameObject, IUpdate
 {
     private readonly GlobalState glob;
 
-    public readonly Triangle hitbox;
+    public readonly Polygon2 hitbox;
 
     public byte health = 0;
 
