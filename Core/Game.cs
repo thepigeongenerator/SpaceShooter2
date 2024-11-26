@@ -1,6 +1,7 @@
 // TODO: currently Initialize() and LoadContent() will not be called after the game has gone past these steps (currently not an issue as they go unused, but will eventually be)
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -28,9 +29,10 @@ public abstract class Game : Microsoft.Xna.Framework.Game
         objectRegistry = new();
     }
 
-    public IEnumerable<T> GetObjectsOfType<T>() where T : class
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IEnumerable<T> GetObjectsOfType<T>() where T : class
     {
-        return objectRegistry.GetObjectsOfType<T>();
+        return Instance.objectRegistry.GetObjectsOfType<T>();
     }
 
     // executes the scheduled actions DO NOT CALL UNLESS YOU KNOW WHAT YOU'RE DOING
@@ -43,7 +45,7 @@ public abstract class Game : Microsoft.Xna.Framework.Game
     protected override void Initialize()
     {
         initialized = true;
-        foreach (IInitialize initialize in objectRegistry.GetObjectsOfType<IInitialize>())
+        foreach (IInitialize initialize in GetObjectsOfType<IInitialize>())
             initialize.Initialize();
 
         ExecuteScheduled();
@@ -54,7 +56,7 @@ public abstract class Game : Microsoft.Xna.Framework.Game
     protected override void LoadContent()
     {
         loadedContent = true;
-        foreach (ILoadContent loadContent in objectRegistry.GetObjectsOfType<ILoadContent>())
+        foreach (ILoadContent loadContent in GetObjectsOfType<ILoadContent>())
             loadContent.LoadContent(Content);
 
         ExecuteScheduled();
@@ -64,7 +66,7 @@ public abstract class Game : Microsoft.Xna.Framework.Game
 
     protected override void Update(GameTime gameTime)
     {
-        foreach (IUpdate update in objectRegistry.GetObjectsOfType<IUpdate>())
+        foreach (IUpdate update in GetObjectsOfType<IUpdate>())
             update.Update();
 
         ExecuteScheduled();
@@ -74,7 +76,7 @@ public abstract class Game : Microsoft.Xna.Framework.Game
 
     protected void DrawObjects()
     {
-        foreach (IDraw draw in objectRegistry.GetObjectsOfType<IDraw>())
+        foreach (IDraw draw in GetObjectsOfType<IDraw>())
             draw.Draw(SpriteBatch);
     }
 }
