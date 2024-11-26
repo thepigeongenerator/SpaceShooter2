@@ -49,10 +49,10 @@ public static class IntersectUtils
         float a, b, c;
         {
             float lx = bx - ax;                     // get the length on the X axis
-            float ly = by - bx;                     // same, but for Y
+            float ly = by - ay;                     // same, but for Y
             a = (lx * lx) + (ly * ly);              // get the squared length of the line segment (direction and magnitude)
             b = ((ax * lx) + (ay * ly)) * 2.0F;     // get how the line segment relates to (0,0)
-            c = (ax * ax) + (ax * ax) - (r * r);    // pythagoras circle equation, shifted to A
+            c = (ax * ax) + (ay * ay) - (r * r);    // pythagoras circle equation, shifted to A
         }
 
 
@@ -87,16 +87,16 @@ public static class IntersectUtils
     public static bool PolygonIntersectsCircle(this Polygon2 polygon, float cx, float cy, float r)
     {
         // loops through the polygon's vertices, and check whether the line intersects with our circle
-        for (int i = 0; i < polygon.vertices.Length; i++)
+        for (int i = 0; i < polygon.VertexCount; i++)
         {
             if (LineIntersectsCircle(
                 cx, cy, r,
-                polygon.vertices[i].position.X,
-                polygon.vertices[i].position.Y,
-                polygon.vertices[i].next.position.X,
-                polygon.vertices[i].next.position.Y))
+                polygon.GetVertexPos(i).X,
+                polygon.GetVertexPos(i).Y,
+                polygon.GetVertexPos(i + 1).X,
+                polygon.GetVertexPos(i + 1).Y))
             {
-                return true;
+                return true; // return true if we intersect; we don't need to check further
             }
         }
 

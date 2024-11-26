@@ -51,8 +51,11 @@ internal class Player : TexturedGameObject, IUpdate
         else if (transform.position.X < 0)
             transform.position.X += Const.SCREEN_WIDTH;
 
+        // set the hitbox's position to the player's position
+        hitbox.position = transform.position;
+
         if (glob.hitboxes)
-            glob.pcl.SetPolygon(hitbox, transform.position, Color.Green);
+            glob.pcl.SetPolygon(hitbox, Color.Green);
 
         //update the texture index if the timer ran out
         TimeUtils.RunWhenTimer(glob.gameTime, ref glob.timings.playerSwitchTextureTime, 100, () =>

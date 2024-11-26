@@ -7,26 +7,13 @@ public static class Extensions
 {
     public static void SetPolygon(this PixelControlLayer pcl, Polygon2 polygon, Color color)
     {
-        foreach (PolyNode vertex in polygon.vertices)
+        for (int i = 0; i < polygon.VertexCount; i++)
         {
             pcl.SetLine(
-                (int)vertex.position.X,
-                (int)vertex.position.Y,
-                (int)vertex.Next.position.X,
-                (int)vertex.Next.position.Y,
-                color);
-        }
-    }
-
-    public static void SetPolygon(this PixelControlLayer pcl, Polygon2 polygon, Vector2 position, Color color)
-    {
-        foreach (PolyNode vertex in polygon.vertices)
-        {
-            pcl.SetLine(
-                (int)(vertex.position.X + position.X),
-                (int)(vertex.position.Y + position.Y),
-                (int)(vertex.Next.position.X + position.X),
-                (int)(vertex.Next.position.Y + position.Y),
+                (int)polygon.GetVertexPos(i).X,
+                (int)polygon.GetVertexPos(i).Y,
+                (int)polygon.GetVertexPos(i + 1).X,
+                (int)polygon.GetVertexPos(i + 1).Y,
                 color);
         }
     }
