@@ -1,3 +1,5 @@
+using System.Data.Common;
+using System.Diagnostics;
 using Core;
 using Core.Polygons;
 using Core.Util;
@@ -9,11 +11,14 @@ namespace SpaceShooter2.Src;
 
 internal class Player : TexturedGameObject, IUpdate
 {
+    private const uint RED = 0xFF0000FF; // monogame is ABGR
     private readonly GlobalState glob;
-
     public readonly Polygon2 hitbox;
 
-    public byte health = 0;
+    private sbyte health = 0;
+    private float startColourChange = 0.0F;
+
+    public sbyte Health => health;
 
     // creates a new player at the centre of the screen
     public Player(GlobalState glob) : base(glob.textures.player.textures[0])
@@ -36,6 +41,20 @@ internal class Player : TexturedGameObject, IUpdate
         this.glob = glob;
     }
 
+    // damages the player
+    public void Damage(sbyte amount = 1)
+    {
+        health -= amount;
+        textureTint = new Color(RED);
+        startColourChange = -1;
+
+        if (health <= 0)
+        {
+            glob.exit = true;
+            return;
+        }
+    }
+
     // allows the user to use input to update the player's position
     public void Update()
     {
@@ -44,6 +63,14 @@ internal class Player : TexturedGameObject, IUpdate
             transform.position.X -= Const.PLAYER_SPEED * glob.gameTime.DeltaTime();
         if (Keyboard.GetState().IsKeyDown(Keys.D))
             transform.position.X += Const.PLAYER_SPEED * glob.gameTime.DeltaTime();
+
+        // store start if it's less than 0
+        if (startColourChange < 0)
+            startColourChange = (float)glob.gameTime.TotalGameTime.TotalSeconds;
+
+        // if the texture tint isn't white, lerp it to white
+        if (textureTint != Color.White)
+            textureTint = Color.Lerp(new Color(RED), Color.White, (float)glob.gameTime.TotalGameTime.TotalSeconds - startColourChange);
 
         //flip the player's position to the other side of the screen if they go "out of bounds"
         if (transform.position.X > Const.SCREEN_WIDTH)

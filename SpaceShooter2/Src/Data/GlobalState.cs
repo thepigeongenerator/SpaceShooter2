@@ -14,6 +14,7 @@ internal record GlobalState // store the reference instead of copying everything
     public Timings timings;
     public Textures textures;
     public GameTime gameTime;
+    public bool exit;
 
     // debug
     public PixelControlLayer pcl;

@@ -5,6 +5,7 @@ using Core;
 using Core.Util;
 using ThePigeonGenerator.MonoGame.Render;
 using SpaceShooter2.Src.Util;
+using System.Diagnostics;
 
 namespace SpaceShooter2.Src;
 
@@ -68,6 +69,14 @@ internal class Astroid : TexturedGameObject, IUpdate
             return;
         }
 
+        // if we intersect the player, destroy ourselves
+        if (glob.player.hitbox.PolygonIntersectsCircle(transform.position.X, transform.position.Y, radius))
+        {
+            glob.player.Damage();
+            Dispose();
+            return;
+        }
+
         // rotate the asteroid clockwise (bigger asteroids rotate slower)
         transform.rotation += MathF.Tau / 360 * -1 * (transform.scale.X - Const.MAX_ASTROID_SIZE) * Const.ASTEROID_ROT_SPEED * glob.gameTime.DeltaTime();
         transform.rotation %= MathF.Tau; // if a rotation of 360° has been achieved, wrap it back around to 0... but with radians
@@ -80,5 +89,4 @@ internal class Astroid : TexturedGameObject, IUpdate
     {
         glob.asteroids.Remove(this);
     }
-
 }

@@ -34,6 +34,7 @@ public partial class SpaceShooter : Core.Game
             bullets = new List<Bullet>(),
             textures = new(),
             timings = new(),
+            exit = false,
         };
 
         // game settings
@@ -67,7 +68,7 @@ public partial class SpaceShooter : Core.Game
     protected override void Update(GameTime gameTime)
     {
 #if DEBUG
-        if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+        if (Keyboard.GetState().IsKeyDown(Keys.Escape) || globalState.exit == true)
             Exit();
 #endif
 
