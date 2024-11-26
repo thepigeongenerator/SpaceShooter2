@@ -7,17 +7,15 @@ namespace SpaceShooter2.Src.Data;
 // handles the application's global state
 internal record GlobalState // store the reference instead of copying everything all the time
 {
-    public Random random;
-    public List<Astroid> asteroids;
-    public List<Bullet> bullets;
-    public Player player;
-    public Timings timings;
-    public Textures textures;
-    public GameTime gameTime;
-    public bool exit;
+    public Random random;               // contains the random module to ensure things in the game remain random enough
+    public List<Astroid> asteroids;     // contains the asteroids that have been spawned and are alive
+    public List<Bullet> bullets;        // contains the bullets that have been spawned in and are alive
+    public Player player;               // contains the player
+    public Timings timings;             // stores different times for time-based operations
+    public Textures textures;           // stores the textures that have been pre-loaded
+    public GameTime gameTime;           // stores the current gameTime (set in Update)
+    public bool exit;                   // flag whether the game should exit
 
-    // debug
-    public PixelControlLayer pcl;
-    public bool hitboxes;
-    public bool hitboxesLock;
+    public PixelControlLayer pcl;       // stores the pixel control layer (allows you to set individual pixels)
+    public bool hitboxes;               // stores whether hitboxes should be drawn or not
 }

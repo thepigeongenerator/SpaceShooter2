@@ -15,6 +15,7 @@ public partial class SpaceShooter : Core.Game
 
     //game variables
     private readonly GlobalState globalState;
+    private bool f3Lock;
 
     public SpaceShooter()
     {
@@ -26,7 +27,7 @@ public partial class SpaceShooter : Core.Game
 #endif
         Console.WriteLine("using seed: {0}", seed);
 
-
+        f3Lock = false;
         globalState = new GlobalState()
         {
             random = new Random(seed), //init random with a seed (also; WHY IS THIS A SIGNED INTEGER!?)
@@ -67,21 +68,21 @@ public partial class SpaceShooter : Core.Game
 
     protected override void Update(GameTime gameTime)
     {
-#if DEBUG
-        if (Keyboard.GetState().IsKeyDown(Keys.Escape) || globalState.exit == true)
+        // exit if exit has been flagged
+        if (globalState.exit == true || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-#endif
 
+        // set the game time to the current time
         globalState.gameTime = gameTime;
 
         // if F3 is pressed, toggle hitboxes mode
-        if (globalState.hitboxesLock == false && Keyboard.GetState().IsKeyDown(Keys.F3))
+        if (f3Lock == false && Keyboard.GetState().IsKeyDown(Keys.F3))
         {
             globalState.hitboxes = !globalState.hitboxes;
-            globalState.hitboxesLock = true;
+            f3Lock = true;
         }
         else if (Keyboard.GetState().IsKeyUp(Keys.F3))
-            globalState.hitboxesLock = false;
+            f3Lock = false;
 
         //create new bullet
         TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, Const.BULLET_SPAWN_DELAY_MS, () =>
