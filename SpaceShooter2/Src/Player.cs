@@ -1,5 +1,3 @@
-using System.Data.Common;
-using System.Diagnostics;
 using Core;
 using Core.Polygons;
 using Core.Util;
@@ -32,10 +30,11 @@ internal class Player : TexturedGameObject, IUpdate
             float x = Width / 2;
             float y = Height / 2;
             hitbox = new(
-                new(0, -y),
-                new(x, y),
-                new(-x, y));
+                new(0, -y),     // top centre
+                new(x, y),      // bottom right
+                new(-x, y));    // bottom left
         }
+
         //set the correct Y position for the player
         transform.position.Y = Const.SCREEN_HEIGHT - Height / 2;
         this.glob = glob;
@@ -92,6 +91,7 @@ internal class Player : TexturedGameObject, IUpdate
             {
                 glob.textures.player.currentTexture = 0;
             }
+            texture = glob.textures.player.textures[glob.textures.player.currentTexture];
         });
     }
 }
