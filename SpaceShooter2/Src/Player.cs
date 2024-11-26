@@ -51,7 +51,7 @@ internal class Player : TexturedGameObject, IUpdate
 
         if (health <= 0)
         {
-            glob.exit = true;
+            glob.lose = true;
             return;
         }
     }

@@ -35,7 +35,7 @@ public partial class SpaceShooter : Core.Game
             bullets = new List<Bullet>(),
             textures = new(),
             timings = new(),
-            exit = false,
+            lose = false,
         };
 
         // game settings
@@ -69,9 +69,26 @@ public partial class SpaceShooter : Core.Game
 
     protected override void Update(GameTime gameTime)
     {
-        // exit if exit has been flagged
-        if (globalState.exit == true || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        // exit if escape has been pressed
+        if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        // if you lost the game
+        if (globalState.lose == true)
+        {
+            // draw a bunch of red dots
+            for (int i = 0; i < globalState.pcl.buffer.Length; i++)
+            {
+                if (i % 16 == 0)
+                    globalState.pcl.buffer[i] = Color.Red;
+            }
+
+            // if any key is pressed, exit
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                Exit();
+
+            return;
+        }
 
         // set the game time to the current time
         globalState.gameTime = gameTime;
@@ -84,6 +101,11 @@ public partial class SpaceShooter : Core.Game
         }
         else if (Keyboard.GetState().IsKeyUp(Keys.F3))
             f3Lock = false;
+
+        if (Keyboard.GetState().IsKeyDown(Keys.F12))
+        {
+            globalState.lose = true;
+        }
 
         //create new bullet
         TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, Const.BULLET_SPAWN_DELAY_MS, () =>
@@ -107,7 +129,14 @@ public partial class SpaceShooter : Core.Game
 
         // draw everything
         globalState.pcl.Draw(SpriteBatch);
-        DrawObjects(); // draw all the gameObjects with IDraw implemented
+
+        if (globalState.lose == false)
+            DrawObjects(); // draw all the gameObjects with IDraw implemented
+        else
+        {
+            SpriteBatch.DrawString(globalState.textures.font, "YOU LOST", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2), Color.Red, Vector2.One / 2, 1.0F, 1.0F);
+            SpriteBatch.DrawString(globalState.textures.font, "press [enter] to exit", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2 + 30), Color.Red, Vector2.One / 2.0F, 0.5F, 1.0F);
+        }
 
         // end the sprite batch
         SpriteBatch.End();

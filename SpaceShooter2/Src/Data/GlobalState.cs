@@ -14,7 +14,7 @@ internal record GlobalState // store the reference instead of copying everything
     public Timings timings;             // stores different times for time-based operations
     public Textures textures;           // stores the textures that have been pre-loaded
     public GameTime gameTime;           // stores the current gameTime (set in Update)
-    public bool exit;                   // flag whether the game should exit
+    public bool lose;                   // flag whether the game should exit
 
     public PixelControlLayer pcl;       // stores the pixel control layer (allows you to set individual pixels)
     public bool hitboxes;               // stores whether hitboxes should be drawn or not
