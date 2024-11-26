@@ -1,6 +1,8 @@
+using System.Diagnostics.Tracing;
 using Core;
 using Core.Polygons;
 using Core.Util;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
@@ -21,7 +23,7 @@ internal class Player : TexturedGameObject, IUpdate
     // creates a new player at the centre of the screen
     public Player(GlobalState glob) : base(glob.textures.player.textures[0])
     {
-        health = 10;
+        health = Const.PLAYER_MAX_HEALTH;
         transform.position = new Vector2(Const.SCREEN_WIDTH / 2);
         transform.scale = Vector2.One * 4.5F;
         transform.origin = Vector2.One / 2.0F;
@@ -93,5 +95,13 @@ internal class Player : TexturedGameObject, IUpdate
             }
             texture = glob.textures.player.textures[glob.textures.player.currentTexture];
         });
+    }
+
+    public override void Draw(SpriteBatch spriteBatch)
+    {
+        spriteBatch.DrawString(glob.textures.font, $"Health: {health}/{Const.PLAYER_MAX_HEALTH}", Vector2.One * 10, Color.Red, 0.0F, Vector2.Zero, 0.4F, SpriteEffects.None, 1);
+
+        // call base's draw
+        base.Draw(spriteBatch);
     }
 }

@@ -55,6 +55,7 @@ public partial class SpaceShooter : Core.Game
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
         //load all the textures
+        globalState.textures.font = Content.Load<SpriteFont>(Const.TEXTURE_FONT);
         globalState.textures.astroid = Content.Load<Texture2D>(Const.TEXTURE_ASTEROID);
         globalState.textures.bullet = Content.Load<Texture2D>(Const.TEXTURE_BULLET);
         globalState.textures.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_0));
@@ -102,11 +103,11 @@ public partial class SpaceShooter : Core.Game
         GraphicsDevice.Clear(new Color(0xFF101010));
 
         // begin the sprite batch
-        SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.FrontToBack);
 
         // draw everything
-        DrawObjects();
         globalState.pcl.Draw(SpriteBatch);
+        DrawObjects(); // draw all the gameObjects with IDraw implemented
 
         // end the sprite batch
         SpriteBatch.End();

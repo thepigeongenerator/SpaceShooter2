@@ -12,6 +12,7 @@ internal static class Const
     public const int BULLET_SPEED = 600;            // px/frame of the bullet
     public const int PLAYER_SPEED = 600;            // px/frame of the player
     public const int ASTEROID_SPEED = 60;           // px/second of the base asteroid speed
+    public const sbyte PLAYER_MAX_HEALTH = 10;      // the maximum amount of health that the player has
     public const int ASTEROID_ROT_SPEED = 60;       // deg/second of the base asteroid's rotation
     public const float MAX_ASTROID_SIZE = 2F;       // what the maximum size percentage of the astroid is allowed to be.
 
@@ -21,4 +22,5 @@ internal static class Const
     public const string TEXTURE_SPACESHIP_0 = "spaceship/spaceship_0";
     public const string TEXTURE_SPACESHIP_1 = "spaceship/spaceship_1";
     public const string TEXTURE_SPACESHIP_2 = "spaceship/spaceship_2";
+    public const string TEXTURE_FONT= "font";
 }

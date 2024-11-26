@@ -8,5 +8,6 @@ internal record Textures // store the reference so you don't copy everything eve
 {
     public Texture2D astroid = null;
     public Texture2D bullet = null;
+    public SpriteFont font = null;
     public TextureCollection player = new();
 }
