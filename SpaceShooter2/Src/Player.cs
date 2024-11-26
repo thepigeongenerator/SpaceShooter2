@@ -36,7 +36,7 @@ internal class Player : TexturedGameObject, IUpdate
         }
 
         //set the correct Y position for the player
-        transform.position.Y = Const.SCREEN_HEIGHT - Height / 2;
+        transform.position.Y = Const.SCREEN_HEIGHT - (Height * transform.origin.Y) - (4 * transform.scale.Y);
         this.glob = glob;
     }
 

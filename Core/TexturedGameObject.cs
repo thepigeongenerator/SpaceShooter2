@@ -27,7 +27,7 @@ public class TexturedGameObject : GameObject, IDraw
 
     // property shorthands
     public float Width => UnscaledWidth * transform.scale.X;
-    public float Height => UnscaledWidth * transform.scale.Y;
+    public float Height => UnscaledHeight * transform.scale.Y;
     public float UnscaledWidth => texture.Width;
     public float UnscaledHeight => texture.Height;
 
