@@ -99,7 +99,8 @@ internal class Player : TexturedGameObject, IUpdate
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.DrawString(glob.textures.font, $"Health: {health}/{Const.PLAYER_MAX_HEALTH}", Vector2.One * 10, Color.Red, 0.0F, Vector2.Zero, 0.4F, SpriteEffects.None, 1);
+        spriteBatch.DrawString(glob.textures.font, $"Health: {health}/{Const.PLAYER_MAX_HEALTH}", new Vector2(10, 10), Color.Red, Vector2.Zero, 0.4F, 1);
+        spriteBatch.DrawString(glob.textures.font, $"Score: {glob.score}{(glob.score == 0 ? "" : "0")}\nHigh Score: {glob.highScore}{(glob.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH - 10, 10), Color.Blue, new Vector2(1, 0), 0.4F, 1);
 
         // call base's draw
         base.Draw(spriteBatch);

@@ -45,7 +45,14 @@ internal class Bullet : TexturedGameObject, IUpdate
             {
                 //destroy the astroid if it isn't unbreakable
                 if (asteroids[i].unbreakable == false)
+                {
+                    glob.score++;
+
+                    if (glob.score > glob.highScore)
+                        glob.highScore = glob.score;
+
                     asteroids[i].Dispose(); // destroy the astroid
+                }
 
                 //destroy the bullet
                 Dispose();

@@ -5,6 +5,8 @@ using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using System.IO;
 
 namespace SpaceShooter2;
 public partial class SpaceShooter : Core.Game
@@ -38,6 +40,9 @@ public partial class SpaceShooter : Core.Game
             lose = false,
         };
 
+        // loads the data stored in the binary file
+        LoadData();
+
         // game settings
         Content.RootDirectory = "Content";
         IsMouseVisible = false;
@@ -48,6 +53,34 @@ public partial class SpaceShooter : Core.Game
         graphics.SynchronizeWithVerticalRetrace = Const.VSYNC;
         graphics.IsFullScreen = false;
         TargetElapsedTime = TimeSpan.FromSeconds(1.0F / Const.UPDATES_PER_SECOND);
+    }
+
+    private void LoadData()
+    {
+        if (File.Exists(Const.DATA_PATH) == false)
+            return;
+
+        byte[] buf = File.ReadAllBytes(Const.DATA_PATH);
+
+        for (int i = buf.Length - 1; i > 0; i--)
+        {
+            globalState.highScore <<= 8;
+            globalState.highScore |= buf[i];
+        }
+    }
+
+    private void StoreData()
+    {
+        byte[] buf = new byte[sizeof(ushort)];
+
+        for (int i = 0; i < buf.Length; i++)
+        {
+            ushort s = globalState.highScore;
+            s &= (ushort)(0xFF << i * 8);
+            buf[i] = (byte)(s >> i * 8);
+        }
+
+        File.WriteAllBytes(Const.DATA_PATH, buf);
     }
 
     protected override void LoadContent()
@@ -135,7 +168,8 @@ public partial class SpaceShooter : Core.Game
         else
         {
             SpriteBatch.DrawString(globalState.textures.font, "YOU LOST", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2), Color.Red, Vector2.One / 2, 1.0F, 1.0F);
-            SpriteBatch.DrawString(globalState.textures.font, "press [enter] to exit", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2 + 30), Color.Red, Vector2.One / 2.0F, 0.5F, 1.0F);
+            SpriteBatch.DrawString(globalState.textures.font, $"score: {globalState.score}{(globalState.score == 0 ? "" : "0")}\nhigh score: {globalState.highScore}{(globalState.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH / 2, 10), Color.White, new Vector2(0.5F, 0), 0.5F, 1.0F);
+            SpriteBatch.DrawString(globalState.textures.font, "press [enter] to exit", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2 + 40), Color.Red, Vector2.One / 2.0F, 0.5F, 1.0F);
         }
 
         // end the sprite batch
@@ -144,5 +178,15 @@ public partial class SpaceShooter : Core.Game
         globalState.pcl.ClearBuffer(); // clear the internal buffer *after* drawing, otherwise it'll fail to draw
 
         base.Draw(gameTime);
+    }
+
+    protected override void OnExiting(object sender, EventArgs args)
+    {
+        if (globalState.lose)
+        {
+            StoreData();
+        }
+
+        base.OnExiting(sender, args);
     }
 }
