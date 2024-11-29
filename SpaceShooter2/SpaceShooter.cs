@@ -59,31 +59,18 @@ public partial class SpaceShooter : Core.Game
 
     private void LoadData()
     {
+        // return if the file doesn't exist
         if (File.Exists(Const.DATA_PATH) == false)
             return;
 
         byte[] buf = File.ReadAllBytes(Const.DATA_PATH);
         Debug.WriteLine($"read data from '{Path.GetFullPath(Const.DATA_PATH)}'");
-
-        // loop through the array backwards, as this is the order that the binary is stored
-        for (int i = buf.Length - 1; i >= 0; i--)
-        {
-            globalState.highScore <<= 8;
-            globalState.highScore |= buf[i];
-        }
+        globalState.highScore = BinarySerializer.Deserialize<ushort>(buf) ?? 0; // if the binary file is corrupted / failed to convert the file to the type, default to 0
     }
 
     private void StoreData()
     {
-        byte[] buf = new byte[sizeof(ushort)];
-
-        for (int i = 0; i < buf.Length; i++)
-        {
-            ushort s = globalState.highScore;
-            s &= (ushort)(0xFF << i * 8);
-            buf[i] = (byte)(s >> i * 8);
-        }
-
+        byte[] buf = BinarySerializer.Serialize(globalState.highScore);
         File.WriteAllBytes(Const.DATA_PATH, buf);
         Debug.WriteLine($"saved data to '{Path.GetFullPath(Const.DATA_PATH)}'");
     }
