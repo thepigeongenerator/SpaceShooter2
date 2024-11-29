@@ -3,7 +3,7 @@
         "debug": {
             "commandName": "Project",
             "dotnetRunMessages": true,
-            "workingDirectory": "bin/Debug/net6.0"
+            "workingDirectory": "bin/Debug/net6.0",
         }
     }
 }

@@ -7,6 +7,7 @@ using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace SpaceShooter2;
@@ -62,8 +63,10 @@ public partial class SpaceShooter : Core.Game
             return;
 
         byte[] buf = File.ReadAllBytes(Const.DATA_PATH);
+        Debug.WriteLine($"read data from '{Path.GetFullPath(Const.DATA_PATH)}'");
 
-        for (int i = buf.Length - 1; i > 0; i--)
+        // loop through the array backwards, as this is the order that the binary is stored
+        for (int i = buf.Length - 1; i >= 0; i--)
         {
             globalState.highScore <<= 8;
             globalState.highScore |= buf[i];
@@ -82,6 +85,7 @@ public partial class SpaceShooter : Core.Game
         }
 
         File.WriteAllBytes(Const.DATA_PATH, buf);
+        Debug.WriteLine($"saved data to '{Path.GetFullPath(Const.DATA_PATH)}'");
     }
 
     protected override void LoadContent()
