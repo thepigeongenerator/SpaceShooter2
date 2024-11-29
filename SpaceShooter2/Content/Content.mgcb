@@ -44,6 +44,24 @@
 /processorParam:TextureFormat=Compressed
 /build:font.spritefont
 
+#begin sounds/damage.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/damage.wav
+
+#begin sounds/destroy_asteroid.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/destroy_asteroid.wav
+
+#begin sounds/lose.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/lose.wav
+
 #begin spaceship/spaceship_0.png
 /importer:TextureImporter
 /processor:TextureProcessor

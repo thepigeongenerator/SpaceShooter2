@@ -2,8 +2,10 @@ using System.Diagnostics.Tracing;
 using Core;
 using Core.Polygons;
 using Core.Util;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
 
@@ -21,7 +23,7 @@ internal class Player : TexturedGameObject, IUpdate
     public sbyte Health => health;
 
     // creates a new player at the centre of the screen
-    public Player(GlobalState glob) : base(glob.textures.player.textures[0])
+    public Player(GlobalState glob) : base(glob.assets.player.textures[0])
     {
         health = Const.PLAYER_MAX_HEALTH;
         transform.position = new Vector2(Const.SCREEN_WIDTH / 2);
@@ -52,8 +54,11 @@ internal class Player : TexturedGameObject, IUpdate
         if (health <= 0)
         {
             glob.lose = true;
+            glob.assets.lose.Play();
             return;
         }
+
+        glob.assets.damage.Play();
     }
 
     // allows the user to use input to update the player's position
@@ -88,19 +93,19 @@ internal class Player : TexturedGameObject, IUpdate
         //update the texture index if the timer ran out
         TimeUtils.RunWhenTimer(glob.gameTime, ref glob.timings.playerSwitchTextureTime, 100, () =>
         {
-            glob.textures.player.currentTexture++; //increase the index of the active texture
-            if (glob.textures.player.currentTexture >= glob.textures.player.textures.Count)
+            glob.assets.player.currentTexture++; //increase the index of the active texture
+            if (glob.assets.player.currentTexture >= glob.assets.player.textures.Count)
             {
-                glob.textures.player.currentTexture = 0;
+                glob.assets.player.currentTexture = 0;
             }
-            texture = glob.textures.player.textures[glob.textures.player.currentTexture];
+            texture = glob.assets.player.textures[glob.assets.player.currentTexture];
         });
     }
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.DrawString(glob.textures.font, $"Health: {health}/{Const.PLAYER_MAX_HEALTH}", new Vector2(10, 10), Color.Red, Vector2.Zero, 0.4F, 1);
-        spriteBatch.DrawString(glob.textures.font, $"Score: {glob.score}{(glob.score == 0 ? "" : "0")}\nHigh Score: {glob.highScore}{(glob.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH - 10, 10), Color.Blue, new Vector2(1, 0), 0.4F, 1);
+        spriteBatch.DrawString(glob.assets.font, $"Health: {health}/{Const.PLAYER_MAX_HEALTH}", new Vector2(10, 10), Color.Red, Vector2.Zero, 0.4F, 1);
+        spriteBatch.DrawString(glob.assets.font, $"Score: {glob.score}{(glob.score == 0 ? "" : "0")}\nHigh Score: {glob.highScore}{(glob.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH - 10, 10), Color.Blue, new Vector2(1, 0), 0.4F, 1);
 
         // call base's draw
         base.Draw(spriteBatch);

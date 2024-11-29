@@ -16,7 +16,7 @@ internal record GlobalState // store the reference instead of copying everything
     public List<Astroid> asteroids;     // contains the asteroids that have been spawned and are alive
     public List<Bullet> bullets;        // contains the bullets that have been spawned in and are alive
     public Player player;               // contains the player
-    public Textures textures;           // stores the textures that have been pre-loaded
+    public Assets assets;               // stores the textures that have been pre-loaded
 
     // game states
     public GameTime gameTime;           // stores the current gameTime (set in Update)

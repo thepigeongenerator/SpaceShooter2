@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using SpaceShooter2.Src;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.IO;
 
 namespace SpaceShooter2;
@@ -35,7 +36,7 @@ public partial class SpaceShooter : Core.Game
             random = new Random(seed), //init random with a seed (also; WHY IS THIS A SIGNED INTEGER!?)
             asteroids = new List<Astroid>(),
             bullets = new List<Bullet>(),
-            textures = new(),
+            assets = new(),
             timings = new(),
             lose = false,
         };
@@ -87,13 +88,16 @@ public partial class SpaceShooter : Core.Game
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-        //load all the textures
-        globalState.textures.font = Content.Load<SpriteFont>(Const.TEXTURE_FONT);
-        globalState.textures.astroid = Content.Load<Texture2D>(Const.TEXTURE_ASTEROID);
-        globalState.textures.bullet = Content.Load<Texture2D>(Const.TEXTURE_BULLET);
-        globalState.textures.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_0));
-        globalState.textures.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_1));
-        globalState.textures.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_2));
+        //load all the assets
+        globalState.assets.font = Content.Load<SpriteFont>(Const.TEXTURE_FONT);
+        globalState.assets.astroid = Content.Load<Texture2D>(Const.TEXTURE_ASTEROID);
+        globalState.assets.bullet = Content.Load<Texture2D>(Const.TEXTURE_BULLET);
+        globalState.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_0));
+        globalState.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_1));
+        globalState.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_2));
+        globalState.assets.damage = Content.Load<SoundEffect>(Const.SFX_DAMAGE);
+        globalState.assets.destroyAsteroid = Content.Load<SoundEffect>(Const.SFX_DESTROY_ASTEROID);
+        globalState.assets.lose = Content.Load<SoundEffect>(Const.SFX_LOSE);
 
         //create a player
         globalState.player = new Player(globalState);
@@ -137,7 +141,7 @@ public partial class SpaceShooter : Core.Game
 
         if (Keyboard.GetState().IsKeyDown(Keys.F12))
         {
-            globalState.lose = true;
+            globalState.player.Damage(globalState.player.Health);
         }
 
         //create new bullet
@@ -167,9 +171,9 @@ public partial class SpaceShooter : Core.Game
             DrawObjects(); // draw all the gameObjects with IDraw implemented
         else
         {
-            SpriteBatch.DrawString(globalState.textures.font, "YOU LOST", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2), Color.Red, Vector2.One / 2, 1.0F, 1.0F);
-            SpriteBatch.DrawString(globalState.textures.font, $"score: {globalState.score}{(globalState.score == 0 ? "" : "0")}\nhigh score: {globalState.highScore}{(globalState.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH / 2, 10), Color.White, new Vector2(0.5F, 0), 0.5F, 1.0F);
-            SpriteBatch.DrawString(globalState.textures.font, "press [enter] to exit", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2 + 40), Color.Red, Vector2.One / 2.0F, 0.5F, 1.0F);
+            SpriteBatch.DrawString(globalState.assets.font, "YOU LOST", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2), Color.Red, Vector2.One / 2, 1.0F, 1.0F);
+            SpriteBatch.DrawString(globalState.assets.font, $"score: {globalState.score}{(globalState.score == 0 ? "" : "0")}\nhigh score: {globalState.highScore}{(globalState.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH / 2, 10), Color.White, new Vector2(0.5F, 0), 0.5F, 1.0F);
+            SpriteBatch.DrawString(globalState.assets.font, "press [enter] to exit", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2 + 40), Color.Red, Vector2.One / 2.0F, 0.5F, 1.0F);
         }
 
         // end the sprite batch

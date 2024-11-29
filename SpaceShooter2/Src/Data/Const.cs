@@ -19,12 +19,15 @@ internal static class Const
     public const float MAX_ASTROID_SIZE = 2F;       // what the maximum size percentage of the astroid is allowed to be.
     public const int ASTROID_SPAWN_DELAY_MS = 500;  // delay in milliseconds between astroid spawns
 
-    // texture names
+    // asset paths
     public const string TEXTURE_ASTEROID = "astroid";
     public const string TEXTURE_BULLET = "bullet";
     public const string TEXTURE_SPACESHIP_0 = "spaceship/spaceship_0";
     public const string TEXTURE_SPACESHIP_1 = "spaceship/spaceship_1";
     public const string TEXTURE_SPACESHIP_2 = "spaceship/spaceship_2";
+    public const string SFX_DAMAGE = "sounds/damage";
+    public const string SFX_DESTROY_ASTEROID = "sounds/destroy_asteroid";
+    public const string SFX_LOSE = "sounds/lose";
     public const string TEXTURE_FONT = "font";
 
     // other

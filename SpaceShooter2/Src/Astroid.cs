@@ -24,7 +24,7 @@ internal class Astroid : TexturedGameObject, IUpdate
 
     // creates a new astroid with a random position at the top of the screen.
     // there is also a random chance this astroid will be unbreakable
-    public Astroid(GlobalState glob, int screenWidth) : base(glob.textures.astroid)
+    public Astroid(GlobalState glob, int screenWidth) : base(glob.assets.astroid)
     {
         transform.origin = Vector2.One / 2.0F;  // put the origin in the centre
         transform.rotation = glob.random.NextSingle() * MathF.Tau; //random rotation from 0..TAU
@@ -35,9 +35,9 @@ internal class Astroid : TexturedGameObject, IUpdate
            Multiplying by MAX_SIZE then would equate to the Actual max size to be 2 * MAX_SIZE. */
 
         // put the astroid offscreen so the player doesn't see it spawning in
-        transform.position.Y = -1 * glob.textures.astroid.Width * transform.scale.X;
+        transform.position.Y = -1 * glob.assets.astroid.Width * transform.scale.X;
 
-        radius = (glob.textures.astroid.Width / 2.0F * transform.scale.X) + (glob.textures.bullet.Width / 2.0F); // add the half of the bullet's texture's width, to compensate for
+        radius = (glob.assets.astroid.Width / 2.0F * transform.scale.X) + (glob.assets.bullet.Width / 2.0F); // add the half of the bullet's texture's width, to compensate for
 
         // have a random chance that the astroid is unbreakable (the player needs to dodge these asteroids)
         if (glob.random.NextSingle() < 0.10F) // 10% chance

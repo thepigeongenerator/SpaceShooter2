@@ -13,7 +13,7 @@ internal class Bullet : TexturedGameObject, IUpdate
     private readonly GlobalState glob;
 
     // creates a new bullet at the player's position
-    public Bullet(GlobalState glob) : base(glob.textures.bullet)
+    public Bullet(GlobalState glob) : base(glob.assets.bullet)
     {
         Vector2 playerPosition = glob.player.transform.position;
 
@@ -27,8 +27,8 @@ internal class Bullet : TexturedGameObject, IUpdate
     // makes the bullet move upwards and destroy any asteroids in it's way (destroys once no longer visible)
     public void Update()
     {
-        int w = glob.textures.bullet.Width;
-        int h = glob.textures.bullet.Height;
+        int w = glob.assets.bullet.Width;
+        int h = glob.assets.bullet.Height;
         List<Astroid> asteroids = glob.asteroids;
         transform.position.Y -= Const.BULLET_SPEED * glob.gameTime.DeltaTime();
 
@@ -51,6 +51,7 @@ internal class Bullet : TexturedGameObject, IUpdate
                     if (glob.score > glob.highScore)
                         glob.highScore = glob.score;
 
+                    glob.assets.destroyAsteroid.Play();
                     asteroids[i].Dispose(); // destroy the astroid
                 }
 
