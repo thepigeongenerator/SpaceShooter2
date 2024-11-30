@@ -43,7 +43,7 @@ internal class Astroid : TexturedGameObject, IUpdate
         if (glob.random.NextSingle() < 0.10F) // 10% chance
         {
             unbreakable = true;
-            textureTint = new Color(0xFF434343);    // tint the texture if the asteroid is unbreakable
+            textureTint = new Color(0xFF505050);    // tint the texture if the asteroid is unbreakable
             transform.position.X = glob.player.transform.position.X;
         }
         else
