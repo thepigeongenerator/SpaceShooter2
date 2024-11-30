@@ -11,7 +11,7 @@ internal static class Const
 
     // gameplay settings
     public const int PLAYER_SPEED = 600;            // px/second of the player
-    public const sbyte PLAYER_MAX_HEALTH = 10;      // the maximum amount of health that the player has
+    public const sbyte PLAYER_MAX_HEALTH = 3;       // the maximum amount of health that the player has
     public const int BULLET_SPEED = 600;            // px/second of the bullet
     public const int BULLET_SPAWN_DELAY_MS = 500;   // delay in milliseconds between bullet spawns
     public const int ASTEROID_SPEED = 60;           // px/second of the base asteroid speed
