@@ -65,7 +65,7 @@ public partial class SpaceShooter : Core.Game
 
         byte[] buf = File.ReadAllBytes(Const.DATA_PATH);
         Debug.WriteLine($"read data from '{Path.GetFullPath(Const.DATA_PATH)}'");
-        globalState.highScore = BinarySerializer.Deserialize<ushort>(buf) ?? 0; // if the binary file is corrupted / failed to convert the file to the type, default to 0
+        globalState.highScore = BinarySerializer.Deserialize<ushort>(buf); // if the binary file is corrupted / failed to convert the file to the type, default to 0
     }
 
     private void StoreData()
