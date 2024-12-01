@@ -1,11 +1,8 @@
-using System.Diagnostics.Tracing;
 using Core;
 using Core.Polygons;
 using Core.Util;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using SpaceShooter2.Src.Data;
 using SpaceShooter2.Src.Util;
 
@@ -64,10 +61,17 @@ internal class Player : TexturedGameObject, IUpdate
     // allows the user to use input to update the player's position
     public void Update()
     {
+        // dispose ourselves if the game has been lost
+        if (glob.lose)
+        {
+            Dispose();
+            return;
+        }
+
         //update player's position based on input
-        if (Keyboard.GetState().IsKeyDown(Keys.A))
+        if (glob.keyboard.IsKeyDown(Keys.A) || glob.keyboard.IsKeyDown(Keys.Left))
             transform.position.X -= Const.PLAYER_SPEED * glob.gameTime.DeltaTime();
-        if (Keyboard.GetState().IsKeyDown(Keys.D))
+        if (glob.keyboard.IsKeyDown(Keys.D) || glob.keyboard.IsKeyDown(Keys.Right))
             transform.position.X += Const.PLAYER_SPEED * glob.gameTime.DeltaTime();
 
         // store start if it's less than 0
@@ -102,12 +106,9 @@ internal class Player : TexturedGameObject, IUpdate
         });
     }
 
-    public override void Draw(SpriteBatch spriteBatch)
+    protected override void OnDispose()
     {
-        spriteBatch.DrawString(glob.assets.font, $"Health: {health}/{Const.PLAYER_MAX_HEALTH}", new Vector2(10, 10), Color.Red, Vector2.Zero, 0.4F, 1);
-        spriteBatch.DrawString(glob.assets.font, $"Score: {glob.score}{(glob.score == 0 ? "" : "0")}\nHigh Score: {glob.highScore}{(glob.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH - 10, 10), Color.Blue, new Vector2(1, 0), 0.4F, 1);
-
-        // call base's draw
-        base.Draw(spriteBatch);
+        glob.player = null;
+        base.OnDispose();
     }
 }

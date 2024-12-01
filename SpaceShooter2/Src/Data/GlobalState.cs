@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 using ThePigeonGenerator.MonoGame.Render;
 
 namespace SpaceShooter2.Src.Data;
@@ -12,16 +13,19 @@ internal record GlobalState // store the reference instead of copying everything
     public Timings timings;             // stores different times for time-based operations
     public PixelControlLayer pcl;       // stores the pixel control layer (allows you to set individual pixels)
 
-    // registries
+    // game objects / registires
     public List<Astroid> asteroids;     // contains the asteroids that have been spawned and are alive
     public List<Bullet> bullets;        // contains the bullets that have been spawned in and are alive
     public Player player;               // contains the player
     public Assets assets;               // stores the textures that have been pre-loaded
+    public UI ui;                       // is in charge of showing the correct UI elements
+    public Spawner spawner;             // is in charge of spawning game objects regularly (eg. bullets and asteroids)
 
     // game states
     public GameTime gameTime;           // stores the current gameTime (set in Update)
+    public KeyboardState keyboard;      // stores the keyboard state (set in Update)
     public ushort score;                // stores the player's score
-    public ushort highScore;            // stores the player's highscore
+    public ushort highscore;            // stores the player's highscore
     public bool lose;                   // flag whether the game should exit
     public bool hitboxes;               // stores whether hitboxes should be drawn or not
 }

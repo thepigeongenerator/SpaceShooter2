@@ -27,12 +27,17 @@ internal class Bullet : TexturedGameObject, IUpdate
     // makes the bullet move upwards and destroy any asteroids in it's way (destroys once no longer visible)
     public void Update()
     {
-        int w = glob.assets.bullet.Width;
-        int h = glob.assets.bullet.Height;
+        // dispose ourselves if the game has been lost
+        if (glob.lose)
+        {
+            Dispose();
+            return;
+        }
+
         List<Astroid> asteroids = glob.asteroids;
         transform.position.Y -= Const.BULLET_SPEED * glob.gameTime.DeltaTime();
 
-        if (transform.position.Y + (h * transform.scale.Y / 2F) < 0)
+        if (transform.position.Y + (Height / 2F) < 0)
         {
             Dispose();
             return;
@@ -48,8 +53,8 @@ internal class Bullet : TexturedGameObject, IUpdate
                 {
                     glob.score++;
 
-                    if (glob.score > glob.highScore)
-                        glob.highScore = glob.score;
+                    if (glob.score > glob.highscore)
+                        glob.highscore = glob.score;
 
                     glob.assets.destroyAsteroid.Play();
                     asteroids[i].Dispose(); // destroy the astroid

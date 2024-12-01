@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src;
 using SpaceShooter2.Src.Data;
-using SpaceShooter2.Src.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,21 +17,18 @@ public partial class SpaceShooter : Core.Game
     protected override SpriteBatch SpriteBatch { get; set; }
 
     //game variables
-    private readonly GlobalState globalState;
+    private readonly GlobalState glob;
     private bool f3Lock;
 
+    // constructor
     public SpaceShooter()
     {
         graphics = new GraphicsDeviceManager(this);
-#if DEBUG
-        int seed = 0;
-#else
         int seed = (int)DateTime.Now.TimeOfDay.TotalSeconds; //use a seed using time
-#endif
         Console.WriteLine("using seed: {0}", seed);
 
         f3Lock = false;
-        globalState = new GlobalState()
+        glob = new GlobalState()
         {
             random = new Random(seed), //init random with a seed (also; WHY IS THIS A SIGNED INTEGER!?)
             asteroids = new List<Astroid>(),
@@ -42,14 +38,19 @@ public partial class SpaceShooter : Core.Game
             lose = false,
         };
 
-        // loads the data stored in the binary file
-        LoadData();
+        // load the data from the binary file, if it exists
+        if (File.Exists(Const.DATA_PATH))
+        {
+            byte[] buf = File.ReadAllBytes(Const.DATA_PATH);
+            Debug.WriteLine($"read data from '{Path.GetFullPath(Const.DATA_PATH)}'");
+            glob.highscore = BinarySerializer.Deserialize<ushort>(buf); // if the binary file is corrupted / failed to convert the file to the type, default to 0
+        }
 
         // game settings
         Content.RootDirectory = "Content";
-        IsMouseVisible = false;
+        IsMouseVisible = true;
 
-        // graphics settings
+        // apply graphics settings
         graphics.PreferredBackBufferWidth = Const.SCREEN_WIDTH;
         graphics.PreferredBackBufferHeight = Const.SCREEN_HEIGHT;
         graphics.SynchronizeWithVerticalRetrace = Const.VSYNC;
@@ -57,92 +58,73 @@ public partial class SpaceShooter : Core.Game
         TargetElapsedTime = TimeSpan.FromSeconds(1.0F / Const.UPDATES_PER_SECOND);
     }
 
-    private void LoadData()
+    // executes keybind actions mainly for debugging purposes.
+    // this has been left in the release build on purpose, to showcase these tools
+    private void DebugKeybinds()
     {
-        // return if the file doesn't exist
-        if (File.Exists(Const.DATA_PATH) == false)
+        // exit if escape has been pressed
+        if (glob.keyboard.IsKeyDown(Keys.Escape))
+            Exit();
+
+        // don't do anything else if we've lost the game
+        if (glob.lose == true)
             return;
 
-        byte[] buf = File.ReadAllBytes(Const.DATA_PATH);
-        Debug.WriteLine($"read data from '{Path.GetFullPath(Const.DATA_PATH)}'");
-        globalState.highScore = BinarySerializer.Deserialize<ushort>(buf); // if the binary file is corrupted / failed to convert the file to the type, default to 0
+        // if F3 is pressed, toggle hitbox visability
+        if (f3Lock == false && glob.keyboard.IsKeyDown(Keys.F3))
+        {
+            glob.hitboxes = !glob.hitboxes;
+            f3Lock = true;
+        }
+        else if (glob.keyboard.IsKeyUp(Keys.F3))
+        {
+            f3Lock = false;
+        }
+
+        // damage the player with the health that they have if f12 has been pressed (instantly kills the player and loses the game)
+        if (glob.keyboard.IsKeyDown(Keys.F12))
+            glob.player.Damage(glob.player.Health);
     }
 
-    private void StoreData()
-    {
-        byte[] buf = BinarySerializer.Serialize(globalState.highScore);
-        File.WriteAllBytes(Const.DATA_PATH, buf);
-        Debug.WriteLine($"saved data to '{Path.GetFullPath(Const.DATA_PATH)}'");
-    }
-
+    // loads all the assets we will use for the game
+    // aditionally, it initializes the objects used in the game
     protected override void LoadContent()
     {
+        // create a spritebatch instance
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
         //load all the assets
-        globalState.assets.font = Content.Load<SpriteFont>(Const.TEXTURE_FONT);
-        globalState.assets.astroid = Content.Load<Texture2D>(Const.TEXTURE_ASTEROID);
-        globalState.assets.bullet = Content.Load<Texture2D>(Const.TEXTURE_BULLET);
-        globalState.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_0));
-        globalState.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_1));
-        globalState.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_2));
-        globalState.assets.damage = Content.Load<SoundEffect>(Const.SFX_DAMAGE);
-        globalState.assets.destroyAsteroid = Content.Load<SoundEffect>(Const.SFX_DESTROY_ASTEROID);
-        globalState.assets.lose = Content.Load<SoundEffect>(Const.SFX_LOSE);
+        glob.assets.font = Content.Load<SpriteFont>(Const.TEXTURE_FONT);
+        glob.assets.astroid = Content.Load<Texture2D>(Const.TEXTURE_ASTEROID);
+        glob.assets.bullet = Content.Load<Texture2D>(Const.TEXTURE_BULLET);
+        glob.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_0));
+        glob.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_1));
+        glob.assets.player.textures.Add(Content.Load<Texture2D>(Const.TEXTURE_SPACESHIP_2));
+        glob.assets.damage = Content.Load<SoundEffect>(Const.SFX_DAMAGE);
+        glob.assets.destroyAsteroid = Content.Load<SoundEffect>(Const.SFX_DESTROY_ASTEROID);
+        glob.assets.lose = Content.Load<SoundEffect>(Const.SFX_LOSE);
 
-        //create a player
-        globalState.player = new Player(globalState);
-        globalState.pcl = new(GraphicsDevice);
+        // init game objects
+        glob.player = new Player(glob);
+        glob.spawner = new Spawner(glob);
+        glob.ui = new UI(glob);
+        glob.pcl = new(GraphicsDevice);
+        base.LoadContent();
     }
 
+    // updates the game
     protected override void Update(GameTime gameTime)
     {
-        // exit if escape has been pressed
-        if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+        // update some globals
+        glob.gameTime = gameTime;
+        glob.keyboard = Keyboard.GetState();
+
+        // excute the debug keybinds to perform debug actions
+        DebugKeybinds();
+
+        // if the game has been lost, check if the enter key has been pressed, exit if so
+        if (glob.lose == true && glob.keyboard.IsKeyDown(Keys.Enter))
             Exit();
-
-        // if you lost the game
-        if (globalState.lose == true)
-        {
-            // draw a bunch of red dots
-            for (int i = 0; i < globalState.pcl.buffer.Length; i++)
-            {
-                if (i % 16 == 0)
-                    globalState.pcl.buffer[i] = Color.Red;
-            }
-
-            // if any key is pressed, exit
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                Exit();
-
-            return;
-        }
-
-        // set the game time to the current time
-        globalState.gameTime = gameTime;
-
-        // if F3 is pressed, toggle hitboxes mode
-        if (f3Lock == false && Keyboard.GetState().IsKeyDown(Keys.F3))
-        {
-            globalState.hitboxes = !globalState.hitboxes;
-            f3Lock = true;
-        }
-        else if (Keyboard.GetState().IsKeyUp(Keys.F3))
-            f3Lock = false;
-
-        if (Keyboard.GetState().IsKeyDown(Keys.F12))
-        {
-            globalState.player.Damage(globalState.player.Health);
-        }
-
-        //create new bullet
-        TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.bulletSpawnTime, Const.BULLET_SPAWN_DELAY_MS, () =>
-            globalState.bullets.Add(new Bullet(globalState)));
-
-        //create new astroid
-        TimeUtils.RunWhenTimer(gameTime, ref globalState.timings.astroidSpawnTime, Const.ASTROID_SPAWN_DELAY_MS, () =>
-            globalState.asteroids.Add(new Astroid(globalState, Const.SCREEN_WIDTH)));
-
 
         base.Update(gameTime);
     }
@@ -150,37 +132,29 @@ public partial class SpaceShooter : Core.Game
     // draws the game
     protected override void Draw(GameTime gameTime)
     {
+        // clear what has previously been drawn
         GraphicsDevice.Clear(new Color(0xFF101010));
 
-        // begin the sprite batch
-        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.FrontToBack);
-
         // draw everything
-        globalState.pcl.Draw(SpriteBatch);
-
-        if (globalState.lose == false)
-            DrawObjects(); // draw all the gameObjects with IDraw implemented
-        else
-        {
-            SpriteBatch.DrawString(globalState.assets.font, "YOU LOST", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2), Color.Red, Vector2.One / 2, 1.0F, 1.0F);
-            SpriteBatch.DrawString(globalState.assets.font, $"score: {globalState.score}{(globalState.score == 0 ? "" : "0")}\nhigh score: {globalState.highScore}{(globalState.highScore == 0 ? "" : "0")}", new Vector2(Const.SCREEN_WIDTH / 2, 10), Color.White, new Vector2(0.5F, 0), 0.5F, 1.0F);
-            SpriteBatch.DrawString(globalState.assets.font, "press [enter] to exit", new Vector2(Const.SCREEN_WIDTH / 2, Const.SCREEN_HEIGHT / 2 + 40), Color.Red, Vector2.One / 2.0F, 0.5F, 1.0F);
-        }
-
-        // end the sprite batch
+        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.FrontToBack);
+        glob.pcl.Draw(SpriteBatch);     // draw the pixel control layer
+        DrawObjects();                  // draw all the gameObjects with IDraw implemented
         SpriteBatch.End();
 
-        globalState.pcl.ClearBuffer(); // clear the internal buffer *after* drawing, otherwise it'll fail to draw
+        // clear pcl's internal buffer *after* drawing, otherwise it won't know what to draw
+        glob.pcl.ClearBuffer();
 
         base.Draw(gameTime);
     }
 
+    // called when the game is exiting
     protected override void OnExiting(object sender, EventArgs args)
     {
-        if (globalState.lose)
-        {
-            StoreData();
-        }
+        // note: not checking whether we've lost in case of accedentally closing
+        // write the data to the binary file
+        byte[] buf = BinarySerializer.Serialize(glob.highscore);                    // serialize the highscore to a buffer
+        File.WriteAllBytes(Const.DATA_PATH, buf);                                   // write this buffer to the data path
+        Debug.WriteLine($"saved data to '{Path.GetFullPath(Const.DATA_PATH)}'");    // log that the data has been saved
 
         base.OnExiting(sender, args);
     }

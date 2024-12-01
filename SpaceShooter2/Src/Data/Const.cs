@@ -8,6 +8,8 @@ internal static class Const
     public const int UPDATES_PER_SECOND = 60;       // how many times per second the game should call Update
     public const int SCREEN_WIDTH = 980;            // width of the window
     public const int SCREEN_HEIGHT = 640;           // height of the window
+    public const int SCREEN_CENTRE_X = SCREEN_WIDTH / 2;
+    public const int SCREEN_CENTRE_Y = SCREEN_HEIGHT / 2;
 
     // gameplay settings
     public const int PLAYER_SPEED = 600;            // px/second of the player

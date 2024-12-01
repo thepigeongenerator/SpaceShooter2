@@ -5,7 +5,6 @@ using Core;
 using Core.Util;
 using ThePigeonGenerator.MonoGame.Render;
 using SpaceShooter2.Src.Util;
-using System.Diagnostics;
 
 namespace SpaceShooter2.Src;
 
@@ -65,6 +64,13 @@ internal class Astroid : TexturedGameObject, IUpdate
     // makes the astroid move down and damages the player if it interacts
     public void Update()
     {
+        // dispose ourselves if the game has been lost
+        if (glob.lose)
+        {
+            Dispose();
+            return;
+        }
+
         // move the astroid down (bigger asteroids move slower)
         transform.position.Y += Multiplier * Const.ASTEROID_SPEED * glob.gameTime.DeltaTime();
 
@@ -94,5 +100,6 @@ internal class Astroid : TexturedGameObject, IUpdate
     protected override void OnDispose()
     {
         glob.asteroids.Remove(this);
+        base.OnDispose();
     }
 }

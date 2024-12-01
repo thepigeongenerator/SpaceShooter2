@@ -1,4 +1,3 @@
-// TODO: currently Initialize() and LoadContent() will not be called after the game has gone past these steps (currently not an issue as they go unused, but will eventually be)
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
