@@ -9,7 +9,6 @@ namespace SpaceShooter2.Src;
 
 internal class Bullet : TexturedGameObject, IUpdate
 {
-    private readonly List<Bullet> bullets = null;
     private readonly GlobalState glob;
 
     // creates a new bullet at the player's position
@@ -20,7 +19,6 @@ internal class Bullet : TexturedGameObject, IUpdate
         transform.position = new Vector2(playerPosition.X, playerPosition.Y - 50);
         transform.scale = Vector2.One * 2.0F;
         transform.origin = Vector2.One / 2.0F;
-        bullets = glob.bullets;
         this.glob = glob;
     }
 
@@ -73,6 +71,6 @@ internal class Bullet : TexturedGameObject, IUpdate
     // cleans up the bullet references
     protected override void OnDispose()
     {
-        bullets.Remove(this);
+        glob.bullets.Remove(this);
     }
 }

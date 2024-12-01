@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Xna.Framework.Graphics;
 using SpaceShooter2.Src.Data;
 using Core;
 using Core.Util;
@@ -12,7 +11,6 @@ internal class Astroid : TexturedGameObject, IUpdate
 {
     // game fields
     public readonly GlobalState glob = null;
-    public Texture2D astroidTexture = null;
 
     // asteroid fields
     public readonly bool unbreakable;   // whether the asteroid can be destroyed by a bullet
@@ -23,7 +21,7 @@ internal class Astroid : TexturedGameObject, IUpdate
 
     // creates a new astroid with a random position at the top of the screen.
     // there is also a random chance this astroid will be unbreakable
-    public Astroid(GlobalState glob, int screenWidth) : base(glob.assets.astroid)
+    public Astroid(GlobalState glob) : base(glob.assets.astroid)
     {
         transform.origin = Vector2.One / 2.0F;  // put the origin in the centre
         transform.rotation = glob.random.NextSingle() * MathF.Tau; //random rotation from 0..TAU
@@ -50,7 +48,7 @@ internal class Astroid : TexturedGameObject, IUpdate
             unbreakable = false;
             byte val = (byte)(0xAA * Multiplier + 0x55);
             textureTint = new Color(val, val, val);    // tint the texture if the asteroid is unbreakable
-            transform.position.X = glob.random.Next(0, screenWidth);
+            transform.position.X = glob.random.Next(0, Const.SCREEN_WIDTH);
         }
 
         this.glob = glob;

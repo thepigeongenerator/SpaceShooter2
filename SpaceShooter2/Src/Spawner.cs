@@ -28,12 +28,6 @@ internal class Spawner : GameObject, IUpdate
 
         // creates new asteroids with a certain delay
         TimeUtils.RunWhenTimer(glob.gameTime, ref glob.timings.astroidSpawnTime, Const.ASTROID_SPAWN_DELAY_MS, () =>
-            glob.asteroids.Add(new Astroid(glob, Const.SCREEN_WIDTH)));
-    }
-
-    protected override void OnDispose()
-    {
-        glob.spawner = null;
-        base.OnDispose();
+            glob.asteroids.Add(new Astroid(glob)));
     }
 }

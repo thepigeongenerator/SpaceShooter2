@@ -104,11 +104,11 @@ public partial class SpaceShooter : Core.Game
         glob.assets.destroyAsteroid = Content.Load<SoundEffect>(Const.SFX_DESTROY_ASTEROID);
         glob.assets.lose = Content.Load<SoundEffect>(Const.SFX_LOSE);
 
-        // init game objects
+        // init game objects (some aren't stored in globalstate, because theglob.spawnery're automatically added to the game object registry)
         glob.player = new Player(glob);
-        glob.spawner = new Spawner(glob);
-        glob.ui = new UI(glob);
         glob.pcl = new(GraphicsDevice);
+        _ = new Spawner(glob);
+        _ = new UI(glob);
         base.LoadContent();
     }
 

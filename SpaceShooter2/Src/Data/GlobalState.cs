@@ -18,8 +18,6 @@ internal record GlobalState // store the reference instead of copying everything
     public List<Bullet> bullets;        // contains the bullets that have been spawned in and are alive
     public Player player;               // contains the player
     public Assets assets;               // stores the textures that have been pre-loaded
-    public UI ui;                       // is in charge of showing the correct UI elements
-    public Spawner spawner;             // is in charge of spawning game objects regularly (eg. bullets and asteroids)
 
     // game states
     public GameTime gameTime;           // stores the current gameTime (set in Update)
