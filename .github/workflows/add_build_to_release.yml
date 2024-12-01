@@ -24,7 +24,6 @@ jobs:
 
     - name: publish and compress architectures
       run: |
-        produced_files=""
         [ ! -d "${{github.workspace}}/builds" ] && mkdir "${{github.workspace}}/builds"
         for arch in ${{env.PUBLISH_ARCHITECTURES}}; do
             echo "processing architecture '$arch'"
@@ -32,7 +31,7 @@ jobs:
 
             fname="${{github.workspace}}/builds/${arch}_${{env.BUILD_PROJECT}}.zip"
             cd "${{env.BUILD_PROJECT}}/bin/Release/net6.0/$arch"
-            zip $fname * -r
+            zip "$fname" * -r
             cd -
             echo "created $fname"
         done
