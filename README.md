@@ -20,7 +20,7 @@ A school project in which I needed to create a space shooter utilising C# and Mo
 - The highscore is stored locally in a binary file when the game exits.
 - The spaceship's texture has a subtle animation where the lights "blink"[^texture]
 
-[^hitboxes]: here is an example of hitboxes being shown: ![green circles are drawn around asteroids, and a green triangle is drawn around the spaceship. The bullets have blue lines going all the way up to the screen.](docs/hitboxes.png)
-[^damage]: here is an example of the spaceship flashing red when being damaged: ![the spaceship texture is tinted red](docs/damage.png)
-[^lose]: here is an example of the lose screen: ![a red dotted background with text at the top indicating a score of 690 and 710. With the text "you lost" in the centre, with underneath stating that you need to press enter, if you wish to exit.](docs/lose.png)
-[^texture]: [view the texture files here](./SpaceShooter2/Content/spaceship/)
+[^hitboxes]: [here is an example of hitboxes being shown](docs/hitboxes.png)
+[^damage]: [here is an example of the spaceship flashing red when being damaged](docs/damage.png)
+[^lose]: [here is an example of the lose screen](docs/lose.png)
+[^texture]: [view the texture files here](SpaceShooter2/Content/spaceship/)
