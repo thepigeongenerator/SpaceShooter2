@@ -20,7 +20,7 @@ A school project in which I needed to create a space shooter utilising C# and Mo
 - The highscore is stored locally in a binary file when the game exits.
 - The spaceship's texture has a subtle animation where the lights "blink"[^texture]
 
-[^hitboxes]: [here is an example of hitboxes being shown](docs/hitboxes.png)
-[^damage]: [here is an example of the spaceship flashing red when being damaged](docs/damage.png)
-[^lose]: [here is an example of the lose screen](docs/lose.png)
+[^hitboxes]: [here is an example of hitboxes being shown](https://github.com/thepigeongenerator/SpaceShooter2/tree/master/docs/hitboxes.png)
+[^damage]: [here is an example of the spaceship flashing red when being damaged](https://github.com/thepigeongenerator/SpaceShooter2/tree/master/docs/damage.png)
+[^lose]: [here is an example of the lose screen](https://github.com/thepigeongenerator/SpaceShooter2/tree/master/docs/lose.png)
 [^texture]: [view the texture files here](SpaceShooter2/Content/spaceship/)
