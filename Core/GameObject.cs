@@ -12,7 +12,7 @@ public class GameObject : IDisposable
     {
         // initialize public variables with their default values
         transform = new();
-        Game.Instance.objectRegistry.AddGameObject(this);
+        Game.Instance.Scene.objectRegistry.AddGameObject(this);
     }
 
     // to get rid of the gameobject
@@ -23,7 +23,7 @@ public class GameObject : IDisposable
             return;
 
         GC.SuppressFinalize(this);
-        Game.Instance.objectRegistry.RemoveGameObject(this);
+        Game.Instance.Scene.objectRegistry.RemoveGameObject(this);
         disposed = true;
         OnDispose();
     }

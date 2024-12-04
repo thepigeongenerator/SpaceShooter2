@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceShooter2.Src;
 using SpaceShooter2.Src.Data;
+using SpaceShooter2.Src.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -86,6 +87,12 @@ public partial class SpaceShooter : Core.Game
             glob.player.Damage(glob.player.Health);
     }
 
+    protected override void Initialize()
+    {
+        LoadScene(0, glob);
+        base.Initialize();
+    }
+
     // loads all the assets we will use for the game
     // aditionally, it initializes the objects used in the game
     protected override void LoadContent()
@@ -104,11 +111,8 @@ public partial class SpaceShooter : Core.Game
         glob.assets.destroyAsteroid = Content.Load<SoundEffect>(Const.SFX_DESTROY_ASTEROID);
         glob.assets.lose = Content.Load<SoundEffect>(Const.SFX_LOSE);
 
-        // init game objects (some aren't stored in globalstate, because theglob.spawnery're automatically added to the game object registry)
-        glob.player = new Player(glob);
         glob.pcl = new(GraphicsDevice);
-        _ = new Spawner(glob);
-        _ = new UI(glob);
+
         base.LoadContent();
     }
 
@@ -122,9 +126,12 @@ public partial class SpaceShooter : Core.Game
         // excute the debug keybinds to perform debug actions
         DebugKeybinds();
 
-        // if the game has been lost, check if the enter key has been pressed, exit if so
-        if (glob.lose == true && glob.keyboard.IsKeyDown(Keys.Enter))
-            Exit();
+        // if the game has been lost, check if the enter key has been pressed, restart if so
+        if (glob.lose && glob.keyboard.IsKeyDown(Keys.Enter))
+        {
+            glob.lose = false;
+            LoadScene(0, glob);
+        }
 
         base.Update(gameTime);
     }
@@ -138,7 +145,7 @@ public partial class SpaceShooter : Core.Game
         // draw everything
         SpriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.FrontToBack);
         glob.pcl.Draw(SpriteBatch);     // draw the pixel control layer
-        DrawObjects();                  // draw all the gameObjects with IDraw implemented
+        Scene.DrawObjects(SpriteBatch); // draw all the gameObjects with IDraw implemented
         SpriteBatch.End();
 
         // clear pcl's internal buffer *after* drawing, otherwise it won't know what to draw
@@ -157,5 +164,12 @@ public partial class SpaceShooter : Core.Game
         Debug.WriteLine($"saved data to '{Path.GetFullPath(Const.DATA_PATH)}'");    // log that the data has been saved
 
         base.OnExiting(sender, args);
+    }
+
+    protected override Type[] GetScenes()
+    {
+        return new Type[] {
+            typeof(GameScene),
+        };
     }
 }

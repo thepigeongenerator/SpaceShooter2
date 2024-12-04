@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Core;
 
-internal class ObjectRegistry
+internal class ObjectRegistry : IDisposable
 {
     // using linked lists instead of a List, because it's faster when creating new objects
     // removing makes no difference, as it only needs to climb till the correct gameObject. Where in a list it'd need to move all the elements after one forward.
@@ -118,5 +118,27 @@ internal class ObjectRegistry
             if (obj is T t)
                 yield return t;
         }
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+
+        // call dispose on all the gameObjects
+        while (objectRegistry.First != null)
+        {
+            objectRegistry.First.Value.Dispose();
+            objectRegistry.RemoveFirst();
+        }
+
+        // clear other lists
+        initializes.Clear();
+        loadContents.Clear();
+        updates.Clear();
+        draws.Clear();
+
+        // clear queues
+        createQueue.Clear();
+        disposeQueue.Clear();
     }
 }

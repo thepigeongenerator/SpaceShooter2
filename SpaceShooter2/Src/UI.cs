@@ -38,7 +38,7 @@ internal class UI : GameObject, IDraw, IUpdate
         {
             spriteBatch.DrawString(glob.assets.font, "YOU LOST", new Vector2(Const.SCREEN_CENTRE_X, Const.SCREEN_CENTRE_Y), Color.Red, centre, 1.0F, 1.0F);
             spriteBatch.DrawString(glob.assets.font, $"Score: {score}\nHigh Score: {highscore}", new Vector2(Const.SCREEN_CENTRE_X, 10), Color.White, topCentre, 0.5F, 1.0F);
-            spriteBatch.DrawString(glob.assets.font, "press [enter] to exit", new Vector2(Const.SCREEN_CENTRE_X, Const.SCREEN_CENTRE_Y + 40), Color.Red, centre, 0.5F, 1.0F);
+            spriteBatch.DrawString(glob.assets.font, "press [enter] to restart", new Vector2(Const.SCREEN_CENTRE_X, Const.SCREEN_CENTRE_Y + 40), Color.Red, centre, 0.5F, 1.0F);
             return;
         }
 
